@@ -362,5 +362,10 @@ namespace PuntryProgram.Forms
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void FileProperties_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

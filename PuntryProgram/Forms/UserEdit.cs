@@ -112,15 +112,20 @@ namespace PuntryProgram.Forms
             }
         }
 
+        private void FillComboBox()
+        {
+            comboBoxLevel.DataSource = DataMethod.StatusFileTable();
+            comboBoxLevel.SelectedValue = "id";
+            comboBoxLevel.DisplayMember = "name";
+        }
+
         private void UserAdd_Load(object sender, EventArgs e)
         {
-            comboBoxLevel.Items.Add("Пользователь");
-            comboBoxLevel.Items.Add("Редактор");
-            comboBoxLevel.Items.Add("Администратор");
-            comboBoxLevel.Text = "Пользователь";
+            FillComboBox();
             HidePassword(true);
             EnabledForm(true);
             FillForm();
+
             pictureBoxUser.SizeMode = PictureBoxSizeMode.StretchImage;
             textBoxName.Validated += textBoxName_Validated;
             textBoxSurname.Validated += textBoxSurname_Validated;

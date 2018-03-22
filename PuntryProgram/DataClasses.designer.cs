@@ -22,7 +22,7 @@ namespace PuntryProgram
 	using System;
 	
 	
-	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="PuntryProgram")]
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="PuntryDB")]
 	public partial class DataClassesDataContext : System.Data.Linq.DataContext
 	{
 		
@@ -30,22 +30,28 @@ namespace PuntryProgram
 		
     #region Определения метода расширяемости
     partial void OnCreated();
-    partial void InsertFavoriteFiles(FavoriteFiles instance);
-    partial void UpdateFavoriteFiles(FavoriteFiles instance);
-    partial void DeleteFavoriteFiles(FavoriteFiles instance);
+    partial void InsertAccessLevels(AccessLevels instance);
+    partial void UpdateAccessLevels(AccessLevels instance);
+    partial void DeleteAccessLevels(AccessLevels instance);
     partial void InsertUsers(Users instance);
     partial void UpdateUsers(Users instance);
     partial void DeleteUsers(Users instance);
+    partial void InsertFavoriteFiles(FavoriteFiles instance);
+    partial void UpdateFavoriteFiles(FavoriteFiles instance);
+    partial void DeleteFavoriteFiles(FavoriteFiles instance);
     partial void InsertFileChanges(FileChanges instance);
     partial void UpdateFileChanges(FileChanges instance);
     partial void DeleteFileChanges(FileChanges instance);
     partial void InsertFiles(Files instance);
     partial void UpdateFiles(Files instance);
     partial void DeleteFiles(Files instance);
+    partial void InsertStatusFile(StatusFile instance);
+    partial void UpdateStatusFile(StatusFile instance);
+    partial void DeleteStatusFile(StatusFile instance);
     #endregion
 		
 		public DataClassesDataContext() : 
-				base(global::PuntryProgram.Properties.Settings.Default.PuntryProgramConnectionString, mappingSource)
+				base(global::PuntryProgram.Properties.Settings.Default.PuntryDBConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
@@ -74,11 +80,11 @@ namespace PuntryProgram
 			OnCreated();
 		}
 		
-		public System.Data.Linq.Table<FavoriteFiles> FavoriteFiles
+		public System.Data.Linq.Table<AccessLevels> AccessLevels
 		{
 			get
 			{
-				return this.GetTable<FavoriteFiles>();
+				return this.GetTable<AccessLevels>();
 			}
 		}
 		
@@ -87,6 +93,14 @@ namespace PuntryProgram
 			get
 			{
 				return this.GetTable<Users>();
+			}
+		}
+		
+		public System.Data.Linq.Table<FavoriteFiles> FavoriteFiles
+		{
+			get
+			{
+				return this.GetTable<FavoriteFiles>();
 			}
 		}
 		
@@ -105,23 +119,27 @@ namespace PuntryProgram
 				return this.GetTable<Files>();
 			}
 		}
+		
+		public System.Data.Linq.Table<StatusFile> StatusFile
+		{
+			get
+			{
+				return this.GetTable<StatusFile>();
+			}
+		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.FavoriteFiles")]
-	public partial class FavoriteFiles : INotifyPropertyChanging, INotifyPropertyChanged
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.AccessLevels")]
+	public partial class AccessLevels : INotifyPropertyChanging, INotifyPropertyChanged
 	{
 		
 		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
 		
 		private int _id;
 		
-		private System.Nullable<int> _user_id;
+		private string _name;
 		
-		private System.Nullable<int> _file_id;
-		
-		private EntityRef<Users> _Users;
-		
-		private EntityRef<Files> _Files;
+		private EntitySet<Users> _Users;
 		
     #region Определения метода расширяемости
     partial void OnLoaded();
@@ -129,16 +147,13 @@ namespace PuntryProgram
     partial void OnCreated();
     partial void OnidChanging(int value);
     partial void OnidChanged();
-    partial void Onuser_idChanging(System.Nullable<int> value);
-    partial void Onuser_idChanged();
-    partial void Onfile_idChanging(System.Nullable<int> value);
-    partial void Onfile_idChanged();
+    partial void OnnameChanging(string value);
+    partial void OnnameChanged();
     #endregion
 		
-		public FavoriteFiles()
+		public AccessLevels()
 		{
-			this._Users = default(EntityRef<Users>);
-			this._Files = default(EntityRef<Files>);
+			this._Users = new EntitySet<Users>(new Action<Users>(this.attach_Users), new Action<Users>(this.detach_Users));
 			OnCreated();
 		}
 		
@@ -162,119 +177,36 @@ namespace PuntryProgram
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="Int")]
-		public System.Nullable<int> user_id
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_name", DbType="NVarChar(50)")]
+		public string name
 		{
 			get
 			{
-				return this._user_id;
+				return this._name;
 			}
 			set
 			{
-				if ((this._user_id != value))
+				if ((this._name != value))
 				{
-					if (this._Users.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onuser_idChanging(value);
+					this.OnnameChanging(value);
 					this.SendPropertyChanging();
-					this._user_id = value;
-					this.SendPropertyChanged("user_id");
-					this.Onuser_idChanged();
+					this._name = value;
+					this.SendPropertyChanged("name");
+					this.OnnameChanged();
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_file_id", DbType="Int")]
-		public System.Nullable<int> file_id
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AccessLevels_Users", Storage="_Users", ThisKey="id", OtherKey="level_id")]
+		public EntitySet<Users> Users
 		{
 			get
 			{
-				return this._file_id;
+				return this._Users;
 			}
 			set
 			{
-				if ((this._file_id != value))
-				{
-					if (this._Files.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onfile_idChanging(value);
-					this.SendPropertyChanging();
-					this._file_id = value;
-					this.SendPropertyChanged("file_id");
-					this.Onfile_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FavoriteFiles", Storage="_Users", ThisKey="user_id", OtherKey="id", IsForeignKey=true)]
-		public Users Users
-		{
-			get
-			{
-				return this._Users.Entity;
-			}
-			set
-			{
-				Users previousValue = this._Users.Entity;
-				if (((previousValue != value) 
-							|| (this._Users.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Users.Entity = null;
-						previousValue.FavoriteFiles.Remove(this);
-					}
-					this._Users.Entity = value;
-					if ((value != null))
-					{
-						value.FavoriteFiles.Add(this);
-						this._user_id = value.id;
-					}
-					else
-					{
-						this._user_id = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Users");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Files_FavoriteFiles", Storage="_Files", ThisKey="file_id", OtherKey="id", IsForeignKey=true)]
-		public Files Files
-		{
-			get
-			{
-				return this._Files.Entity;
-			}
-			set
-			{
-				Files previousValue = this._Files.Entity;
-				if (((previousValue != value) 
-							|| (this._Files.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Files.Entity = null;
-						previousValue.FavoriteFiles.Remove(this);
-					}
-					this._Files.Entity = value;
-					if ((value != null))
-					{
-						value.FavoriteFiles.Add(this);
-						this._file_id = value.id;
-					}
-					else
-					{
-						this._file_id = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Files");
-				}
+				this._Users.Assign(value);
 			}
 		}
 		
@@ -296,6 +228,18 @@ namespace PuntryProgram
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+		
+		private void attach_Users(Users entity)
+		{
+			this.SendPropertyChanging();
+			entity.AccessLevels = this;
+		}
+		
+		private void detach_Users(Users entity)
+		{
+			this.SendPropertyChanging();
+			entity.AccessLevels = null;
 		}
 	}
 	
@@ -319,13 +263,13 @@ namespace PuntryProgram
 		
 		private System.Nullable<System.DateTime> _datetime_at;
 		
-		private bool _admin;
-		
-		private bool _editor;
+		private System.Nullable<int> _level_id;
 		
 		private EntitySet<FavoriteFiles> _FavoriteFiles;
 		
 		private EntitySet<FileChanges> _FileChanges;
+		
+		private EntityRef<AccessLevels> _AccessLevels;
 		
     #region Определения метода расширяемости
     partial void OnLoaded();
@@ -345,16 +289,15 @@ namespace PuntryProgram
     partial void OnimageChanged();
     partial void Ondatetime_atChanging(System.Nullable<System.DateTime> value);
     partial void Ondatetime_atChanged();
-    partial void OnadminChanging(bool value);
-    partial void OnadminChanged();
-    partial void OneditorChanging(bool value);
-    partial void OneditorChanged();
+    partial void Onlevel_idChanging(System.Nullable<int> value);
+    partial void Onlevel_idChanged();
     #endregion
 		
 		public Users()
 		{
 			this._FavoriteFiles = new EntitySet<FavoriteFiles>(new Action<FavoriteFiles>(this.attach_FavoriteFiles), new Action<FavoriteFiles>(this.detach_FavoriteFiles));
 			this._FileChanges = new EntitySet<FileChanges>(new Action<FileChanges>(this.attach_FileChanges), new Action<FileChanges>(this.detach_FileChanges));
+			this._AccessLevels = default(EntityRef<AccessLevels>);
 			OnCreated();
 		}
 		
@@ -498,42 +441,26 @@ namespace PuntryProgram
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_admin", DbType="Bit NOT NULL")]
-		public bool admin
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_level_id", DbType="Int")]
+		public System.Nullable<int> level_id
 		{
 			get
 			{
-				return this._admin;
+				return this._level_id;
 			}
 			set
 			{
-				if ((this._admin != value))
+				if ((this._level_id != value))
 				{
-					this.OnadminChanging(value);
+					if (this._AccessLevels.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onlevel_idChanging(value);
 					this.SendPropertyChanging();
-					this._admin = value;
-					this.SendPropertyChanged("admin");
-					this.OnadminChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_editor", DbType="Bit NOT NULL")]
-		public bool editor
-		{
-			get
-			{
-				return this._editor;
-			}
-			set
-			{
-				if ((this._editor != value))
-				{
-					this.OneditorChanging(value);
-					this.SendPropertyChanging();
-					this._editor = value;
-					this.SendPropertyChanged("editor");
-					this.OneditorChanged();
+					this._level_id = value;
+					this.SendPropertyChanged("level_id");
+					this.Onlevel_idChanged();
 				}
 			}
 		}
@@ -561,6 +488,40 @@ namespace PuntryProgram
 			set
 			{
 				this._FileChanges.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AccessLevels_Users", Storage="_AccessLevels", ThisKey="level_id", OtherKey="id", IsForeignKey=true)]
+		public AccessLevels AccessLevels
+		{
+			get
+			{
+				return this._AccessLevels.Entity;
+			}
+			set
+			{
+				AccessLevels previousValue = this._AccessLevels.Entity;
+				if (((previousValue != value) 
+							|| (this._AccessLevels.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._AccessLevels.Entity = null;
+						previousValue.Users.Remove(this);
+					}
+					this._AccessLevels.Entity = value;
+					if ((value != null))
+					{
+						value.Users.Add(this);
+						this._level_id = value.id;
+					}
+					else
+					{
+						this._level_id = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("AccessLevels");
+				}
 			}
 		}
 		
@@ -609,6 +570,198 @@ namespace PuntryProgram
 		}
 	}
 	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.FavoriteFiles")]
+	public partial class FavoriteFiles : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _id;
+		
+		private System.Nullable<int> _file_id;
+		
+		private System.Nullable<int> _user_id;
+		
+		private EntityRef<Users> _Users;
+		
+		private EntityRef<Files> _Files;
+		
+    #region Определения метода расширяемости
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnidChanging(int value);
+    partial void OnidChanged();
+    partial void Onfile_idChanging(System.Nullable<int> value);
+    partial void Onfile_idChanged();
+    partial void Onuser_idChanging(System.Nullable<int> value);
+    partial void Onuser_idChanged();
+    #endregion
+		
+		public FavoriteFiles()
+		{
+			this._Users = default(EntityRef<Users>);
+			this._Files = default(EntityRef<Files>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int id
+		{
+			get
+			{
+				return this._id;
+			}
+			set
+			{
+				if ((this._id != value))
+				{
+					this.OnidChanging(value);
+					this.SendPropertyChanging();
+					this._id = value;
+					this.SendPropertyChanged("id");
+					this.OnidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_file_id", DbType="Int")]
+		public System.Nullable<int> file_id
+		{
+			get
+			{
+				return this._file_id;
+			}
+			set
+			{
+				if ((this._file_id != value))
+				{
+					if (this._Files.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onfile_idChanging(value);
+					this.SendPropertyChanging();
+					this._file_id = value;
+					this.SendPropertyChanged("file_id");
+					this.Onfile_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="Int")]
+		public System.Nullable<int> user_id
+		{
+			get
+			{
+				return this._user_id;
+			}
+			set
+			{
+				if ((this._user_id != value))
+				{
+					if (this._Users.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onuser_idChanging(value);
+					this.SendPropertyChanging();
+					this._user_id = value;
+					this.SendPropertyChanged("user_id");
+					this.Onuser_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FavoriteFiles", Storage="_Users", ThisKey="user_id", OtherKey="id", IsForeignKey=true)]
+		public Users Users
+		{
+			get
+			{
+				return this._Users.Entity;
+			}
+			set
+			{
+				Users previousValue = this._Users.Entity;
+				if (((previousValue != value) 
+							|| (this._Users.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Users.Entity = null;
+						previousValue.FavoriteFiles.Remove(this);
+					}
+					this._Users.Entity = value;
+					if ((value != null))
+					{
+						value.FavoriteFiles.Add(this);
+						this._user_id = value.id;
+					}
+					else
+					{
+						this._user_id = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Users");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Files_FavoriteFiles", Storage="_Files", ThisKey="file_id", OtherKey="id", IsForeignKey=true)]
+		public Files Files
+		{
+			get
+			{
+				return this._Files.Entity;
+			}
+			set
+			{
+				Files previousValue = this._Files.Entity;
+				if (((previousValue != value) 
+							|| (this._Files.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Files.Entity = null;
+						previousValue.FavoriteFiles.Remove(this);
+					}
+					this._Files.Entity = value;
+					if ((value != null))
+					{
+						value.FavoriteFiles.Add(this);
+						this._file_id = value.id;
+					}
+					else
+					{
+						this._file_id = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Files");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.FileChanges")]
 	public partial class FileChanges : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -621,9 +774,9 @@ namespace PuntryProgram
 		
 		private System.Nullable<System.DateTime> _datetime_up;
 		
-		private System.Nullable<int> _user_id;
-		
 		private System.Nullable<int> _file_id;
+		
+		private System.Nullable<int> _user_id;
 		
 		private EntityRef<Users> _Users;
 		
@@ -639,10 +792,10 @@ namespace PuntryProgram
     partial void OncommentChanged();
     partial void Ondatetime_upChanging(System.Nullable<System.DateTime> value);
     partial void Ondatetime_upChanged();
-    partial void Onuser_idChanging(System.Nullable<int> value);
-    partial void Onuser_idChanged();
     partial void Onfile_idChanging(System.Nullable<int> value);
     partial void Onfile_idChanged();
+    partial void Onuser_idChanging(System.Nullable<int> value);
+    partial void Onuser_idChanged();
     #endregion
 		
 		public FileChanges()
@@ -712,30 +865,6 @@ namespace PuntryProgram
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="Int")]
-		public System.Nullable<int> user_id
-		{
-			get
-			{
-				return this._user_id;
-			}
-			set
-			{
-				if ((this._user_id != value))
-				{
-					if (this._Users.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onuser_idChanging(value);
-					this.SendPropertyChanging();
-					this._user_id = value;
-					this.SendPropertyChanged("user_id");
-					this.Onuser_idChanged();
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_file_id", DbType="Int")]
 		public System.Nullable<int> file_id
 		{
@@ -756,6 +885,30 @@ namespace PuntryProgram
 					this._file_id = value;
 					this.SendPropertyChanged("file_id");
 					this.Onfile_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_user_id", DbType="Int")]
+		public System.Nullable<int> user_id
+		{
+			get
+			{
+				return this._user_id;
+			}
+			set
+			{
+				if ((this._user_id != value))
+				{
+					if (this._Users.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onuser_idChanging(value);
+					this.SendPropertyChanging();
+					this._user_id = value;
+					this.SendPropertyChanged("user_id");
+					this.Onuser_idChanged();
 				}
 			}
 		}
@@ -861,23 +1014,23 @@ namespace PuntryProgram
 		
 		private string _comment;
 		
-		private System.Data.Linq.Binary _binary;
+		private System.Data.Linq.Binary _data;
 		
 		private string _extension;
 		
 		private System.Nullable<int> _size;
 		
-		private bool _project;
+		private System.Nullable<bool> _archive;
 		
-		private bool _review;
-		
-		private bool _archive;
+		private System.Nullable<int> _status_file_id;
 		
 		private System.Nullable<int> _user_id;
 		
 		private EntitySet<FavoriteFiles> _FavoriteFiles;
 		
 		private EntitySet<FileChanges> _FileChanges;
+		
+		private EntityRef<StatusFile> _StatusFile;
 		
     #region Определения метода расширяемости
     partial void OnLoaded();
@@ -889,18 +1042,16 @@ namespace PuntryProgram
     partial void OnnameChanged();
     partial void OncommentChanging(string value);
     partial void OncommentChanged();
-    partial void OnbinaryChanging(System.Data.Linq.Binary value);
-    partial void OnbinaryChanged();
+    partial void OndataChanging(System.Data.Linq.Binary value);
+    partial void OndataChanged();
     partial void OnextensionChanging(string value);
     partial void OnextensionChanged();
     partial void OnsizeChanging(System.Nullable<int> value);
     partial void OnsizeChanged();
-    partial void OnprojectChanging(bool value);
-    partial void OnprojectChanged();
-    partial void OnreviewChanging(bool value);
-    partial void OnreviewChanged();
-    partial void OnarchiveChanging(bool value);
+    partial void OnarchiveChanging(System.Nullable<bool> value);
     partial void OnarchiveChanged();
+    partial void Onstatus_file_idChanging(System.Nullable<int> value);
+    partial void Onstatus_file_idChanged();
     partial void Onuser_idChanging(System.Nullable<int> value);
     partial void Onuser_idChanged();
     #endregion
@@ -909,6 +1060,7 @@ namespace PuntryProgram
 		{
 			this._FavoriteFiles = new EntitySet<FavoriteFiles>(new Action<FavoriteFiles>(this.attach_FavoriteFiles), new Action<FavoriteFiles>(this.detach_FavoriteFiles));
 			this._FileChanges = new EntitySet<FileChanges>(new Action<FileChanges>(this.attach_FileChanges), new Action<FileChanges>(this.detach_FileChanges));
+			this._StatusFile = default(EntityRef<StatusFile>);
 			OnCreated();
 		}
 		
@@ -972,22 +1124,22 @@ namespace PuntryProgram
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_binary", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
-		public System.Data.Linq.Binary binary
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_data", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
+		public System.Data.Linq.Binary data
 		{
 			get
 			{
-				return this._binary;
+				return this._data;
 			}
 			set
 			{
-				if ((this._binary != value))
+				if ((this._data != value))
 				{
-					this.OnbinaryChanging(value);
+					this.OndataChanging(value);
 					this.SendPropertyChanging();
-					this._binary = value;
-					this.SendPropertyChanged("binary");
-					this.OnbinaryChanged();
+					this._data = value;
+					this.SendPropertyChanged("data");
+					this.OndataChanged();
 				}
 			}
 		}
@@ -1032,48 +1184,8 @@ namespace PuntryProgram
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_project", DbType="Bit NOT NULL")]
-		public bool project
-		{
-			get
-			{
-				return this._project;
-			}
-			set
-			{
-				if ((this._project != value))
-				{
-					this.OnprojectChanging(value);
-					this.SendPropertyChanging();
-					this._project = value;
-					this.SendPropertyChanged("project");
-					this.OnprojectChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_review", DbType="Bit NOT NULL")]
-		public bool review
-		{
-			get
-			{
-				return this._review;
-			}
-			set
-			{
-				if ((this._review != value))
-				{
-					this.OnreviewChanging(value);
-					this.SendPropertyChanging();
-					this._review = value;
-					this.SendPropertyChanged("review");
-					this.OnreviewChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_archive", DbType="Bit NOT NULL")]
-		public bool archive
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_archive", DbType="Bit")]
+		public System.Nullable<bool> archive
 		{
 			get
 			{
@@ -1088,6 +1200,30 @@ namespace PuntryProgram
 					this._archive = value;
 					this.SendPropertyChanged("archive");
 					this.OnarchiveChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_status_file_id", DbType="Int")]
+		public System.Nullable<int> status_file_id
+		{
+			get
+			{
+				return this._status_file_id;
+			}
+			set
+			{
+				if ((this._status_file_id != value))
+				{
+					if (this._StatusFile.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onstatus_file_idChanging(value);
+					this.SendPropertyChanging();
+					this._status_file_id = value;
+					this.SendPropertyChanged("status_file_id");
+					this.Onstatus_file_idChanged();
 				}
 			}
 		}
@@ -1138,6 +1274,40 @@ namespace PuntryProgram
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="StatusFile_Files", Storage="_StatusFile", ThisKey="status_file_id", OtherKey="id", IsForeignKey=true)]
+		public StatusFile StatusFile
+		{
+			get
+			{
+				return this._StatusFile.Entity;
+			}
+			set
+			{
+				StatusFile previousValue = this._StatusFile.Entity;
+				if (((previousValue != value) 
+							|| (this._StatusFile.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._StatusFile.Entity = null;
+						previousValue.Files.Remove(this);
+					}
+					this._StatusFile.Entity = value;
+					if ((value != null))
+					{
+						value.Files.Add(this);
+						this._status_file_id = value.id;
+					}
+					else
+					{
+						this._status_file_id = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("StatusFile");
+				}
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -1180,6 +1350,120 @@ namespace PuntryProgram
 		{
 			this.SendPropertyChanging();
 			entity.Files = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.StatusFile")]
+	public partial class StatusFile : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _id;
+		
+		private string _name;
+		
+		private EntitySet<Files> _Files;
+		
+    #region Определения метода расширяемости
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnidChanging(int value);
+    partial void OnidChanged();
+    partial void OnnameChanging(string value);
+    partial void OnnameChanged();
+    #endregion
+		
+		public StatusFile()
+		{
+			this._Files = new EntitySet<Files>(new Action<Files>(this.attach_Files), new Action<Files>(this.detach_Files));
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int id
+		{
+			get
+			{
+				return this._id;
+			}
+			set
+			{
+				if ((this._id != value))
+				{
+					this.OnidChanging(value);
+					this.SendPropertyChanging();
+					this._id = value;
+					this.SendPropertyChanged("id");
+					this.OnidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_name", DbType="NVarChar(50)")]
+		public string name
+		{
+			get
+			{
+				return this._name;
+			}
+			set
+			{
+				if ((this._name != value))
+				{
+					this.OnnameChanging(value);
+					this.SendPropertyChanging();
+					this._name = value;
+					this.SendPropertyChanged("name");
+					this.OnnameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="StatusFile_Files", Storage="_Files", ThisKey="id", OtherKey="status_file_id")]
+		public EntitySet<Files> Files
+		{
+			get
+			{
+				return this._Files;
+			}
+			set
+			{
+				this._Files.Assign(value);
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_Files(Files entity)
+		{
+			this.SendPropertyChanging();
+			entity.StatusFile = this;
+		}
+		
+		private void detach_Files(Files entity)
+		{
+			this.SendPropertyChanging();
+			entity.StatusFile = null;
 		}
 	}
 }

@@ -27,7 +27,6 @@ namespace PuntryProgram.Forms
             textBoxPassword.MaxLength = 50;
             textBoxLogin.Validated += textBoxLogin_Validated;
             textBoxPassword.Validated += textBoxPassword_Validated;
-            //Icon = Properties.Resources.pc;
         }
 
         private void EnabledForm(bool value)
@@ -160,6 +159,11 @@ namespace PuntryProgram.Forms
             {
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void Login_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

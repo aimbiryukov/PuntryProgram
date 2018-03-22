@@ -36,12 +36,11 @@ namespace PuntryProgram.Classes
         public Binary binary;
         public DateTime dateTimeAT;
         public DateTime dateTimeUP;
-        public bool reveiw;
-        public bool project;
+        public string statusName;
         public bool archive;
         public int userId;
 
-        public FileStruct(int fileId, string name, string comment, string extension, int size, Binary binary, DateTime dateTimeAT, DateTime dateTimeUP, bool reveiw, bool project, bool archive, int userId)
+        public FileStruct(int fileId, string name, string comment, string extension, int size, Binary binary, DateTime dateTimeAT, DateTime dateTimeUP, string statusName, bool archive, int userId)
         {
             this.fileId = fileId;
             this.name = name;
@@ -51,8 +50,7 @@ namespace PuntryProgram.Classes
             this.binary = binary;
             this.dateTimeAT = dateTimeAT;
             this.dateTimeUP = dateTimeUP;
-            this.reveiw = reveiw;
-            this.project = project;
+            this.statusName = statusName;
             this.archive = archive;
             this.userId = userId;
         }
@@ -67,9 +65,9 @@ namespace PuntryProgram.Classes
         public Guid password;
         public DateTime dateTimeAT;
         public Binary binary;
-        public LevelAccess level;
+        public string levelName;
 
-        public UserStruct(int userId, string name, string surname, string login, Guid password, DateTime dateTimeAT, Binary binary, LevelAccess level)
+        public UserStruct(int userId, string name, string surname, string login, Guid password, DateTime dateTimeAT, Binary binary, string levelName)
         {
             this.userId = userId;
             this.name = name;
@@ -78,7 +76,7 @@ namespace PuntryProgram.Classes
             this.password = password;
             this.dateTimeAT = dateTimeAT;
             this.binary = binary;
-            this.level = level;
+            this.levelName = levelName;
         }
     }
 
@@ -115,30 +113,32 @@ namespace PuntryProgram.Classes
         public static IQueryable UsersTable()
         {
             return _db.Users
-            .OrderByDescending(o => o.datetime_at)
-            .Select(s => new
-            {
-                id = s.id,
-                Логин = s.login,
-                Имя = s.name,
-                Фамилия = s.surname,
-                Статус = (s.admin == true) ? "Администратор" : (s.editor == true) ? "Редактор" : "Пользователь",
-                datetime_at = s.datetime_at
-            });
+                .Join(_db.AccessLevels, u=>u.level_id,l=>l.id, (u,l)=> new { u,l })
+                .OrderByDescending(o=>o.u.datetime_at)
+                .Select(s => new
+                {
+                    id = s.u.id,
+                    Логин = s.u.login,
+                    Имя = s.u.name,
+                    Фамилия = s.u.surname,
+                    Статус = s.l.name,
+                    datetime_at = s.u.datetime_at
+                });
         }
 
         public static IQueryable SearchUsers(string text)
         {
             return _db.Users
-                .OrderByDescending(o => o.datetime_at)
+                .Join(_db.AccessLevels, u => u.level_id, l => l.id, (u, l) => new { u, l })
+                .OrderByDescending(o => o.u.datetime_at)
                 .Select(s => new
                 {
-                    id = s.id,
-                    Логин = s.login,
-                    Имя = s.name,
-                    Фамилия = s.surname,
-                    Статус = (s.admin == true) ? "Администратор" : (s.editor == true) ? "Редактор" : "Пользователь",
-                    datetime_at = s.datetime_at
+                    id = s.u.id,
+                    Логин = s.u.login,
+                    Имя = s.u.name,
+                    Фамилия = s.u.surname,
+                    Статус = s.l.name,
+                    datetime_at = s.u.datetime_at
                 })
                 .Where(w =>
                 w.Имя.StartsWith(text) ||
@@ -150,17 +150,18 @@ namespace PuntryProgram.Classes
         public static UserStruct GetUser(int userId)
         {
             return _db.Users
-                .Where(w => w.id == userId)
+                .Join(_db.AccessLevels, u => u.level_id, l => l.id, (u, l) => new { u, l })
+                .Where(w => w.u.id == userId)
                 .Select(s => new UserStruct
                 (
-                    s.id,
-                    s.name,
-                    s.surname,
-                    s.login,
-                    (Guid)s.password,
-                    (DateTime)s.datetime_at,
-                    s.image,
-                    (s.admin == true) ? LevelAccess.Admin : (s.editor == true) ? LevelAccess.Editor : LevelAccess.User)
+                    s.u.id,
+                    s.u.name,
+                    s.u.surname,
+                    s.u.login,
+                    (Guid)s.u.password,
+                    (DateTime)s.u.datetime_at,
+                    s.u.image,
+                    s.l.name
                 ).Single();
         }
 
@@ -169,7 +170,7 @@ namespace PuntryProgram.Classes
             return _db.Users.Where(w => w.login == login).Select(s => s.id).Single();
         }
 
-        public static void InsertUser(string name, string surname, string login, Guid password, DateTime dateTimeAT, Binary binary, LevelAccess level)
+        public static void InsertUser(string name, string surname, string login, Guid password, DateTime dateTimeAT, Binary binary, int levelId)
         {
             var newUser = new Users
             {
@@ -179,8 +180,7 @@ namespace PuntryProgram.Classes
                 password = password,
                 datetime_at = dateTimeAT,
                 image = binary,
-                admin = (level == LevelAccess.Admin) ? true : false,
-                editor = (level == LevelAccess.Editor) ? true : false,
+                level_id = levelId
             };
 
             _db.Users.InsertOnSubmit(newUser);
@@ -201,7 +201,7 @@ namespace PuntryProgram.Classes
             _db.SubmitChanges();
         }
 
-        public static void UpdateUser(int userId, string name, string surname, string login, Guid password, Binary binary, LevelAccess level)
+        public static void UpdateUser(int userId, string name, string surname, string login, Guid password, Binary binary, int levelId)
         {
             var user = _db.Users.Where(u => u.id == userId).Single();
 
@@ -210,10 +210,14 @@ namespace PuntryProgram.Classes
             user.login = login;
             user.password = password;
             user.image = binary;
-            user.admin = (level == LevelAccess.Admin) ? true : false;
-            user.editor = (level == LevelAccess.Editor) ? true : false;
+            user.level_id = levelId;
 
             _db.SubmitChanges();
+        }
+
+        public static IQueryable StatusFileTable()
+        {
+            return _db.StatusFile;
         }
 
         public static FileStruct GetFile(int fileId)
@@ -231,11 +235,10 @@ namespace PuntryProgram.Classes
                     s.f.comment,
                     s.f.extension,
                     (int)s.f.size,
-                    s.f.binary,
+                    s.f.data,
                     dateTimeAT,
                     dateTimeUP,
-                    s.f.review,
-                    s.f.project,
+                    s.f.status_file_id
                     s.f.archive,
                     (int)s.f.user_id)
                 ).First();

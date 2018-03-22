@@ -514,6 +514,7 @@
             this.Name = "FileProperties";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Свойства файла: ";
+            this.Load += new System.EventHandler(this.FileProperties_Load);
             this.panel.ResumeLayout(false);
             this.panel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewHistory)).EndInit();
