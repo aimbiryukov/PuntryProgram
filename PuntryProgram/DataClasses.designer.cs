@@ -1020,7 +1020,7 @@ namespace PuntryProgram
 		
 		private System.Nullable<int> _size;
 		
-		private System.Nullable<bool> _archive;
+		private bool _archive;
 		
 		private System.Nullable<int> _status_file_id;
 		
@@ -1048,7 +1048,7 @@ namespace PuntryProgram
     partial void OnextensionChanged();
     partial void OnsizeChanging(System.Nullable<int> value);
     partial void OnsizeChanged();
-    partial void OnarchiveChanging(System.Nullable<bool> value);
+    partial void OnarchiveChanging(bool value);
     partial void OnarchiveChanged();
     partial void Onstatus_file_idChanging(System.Nullable<int> value);
     partial void Onstatus_file_idChanged();
@@ -1184,8 +1184,8 @@ namespace PuntryProgram
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_archive", DbType="Bit")]
-		public System.Nullable<bool> archive
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_archive", DbType="Bit NOT NULL")]
+		public bool archive
 		{
 			get
 			{

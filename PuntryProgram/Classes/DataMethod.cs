@@ -36,11 +36,11 @@ namespace PuntryProgram.Classes
         public Binary binary;
         public DateTime dateTimeAT;
         public DateTime dateTimeUP;
-        public string statusName;
+        public string statusFile;
         public bool archive;
         public int userId;
 
-        public FileStruct(int fileId, string name, string comment, string extension, int size, Binary binary, DateTime dateTimeAT, DateTime dateTimeUP, string statusName, bool archive, int userId)
+        public FileStruct(int fileId, string name, string comment, string extension, int size, Binary binary, DateTime dateTimeAT, DateTime dateTimeUP, string statusFile, bool archive, int userId)
         {
             this.fileId = fileId;
             this.name = name;
@@ -50,7 +50,7 @@ namespace PuntryProgram.Classes
             this.binary = binary;
             this.dateTimeAT = dateTimeAT;
             this.dateTimeUP = dateTimeUP;
-            this.statusName = statusName;
+            this.statusFile = statusFile;
             this.archive = archive;
             this.userId = userId;
         }
@@ -117,12 +117,12 @@ namespace PuntryProgram.Classes
                 .OrderByDescending(o=>o.u.datetime_at)
                 .Select(s => new
                 {
-                    id = s.u.id,
+                    s.u.id,
                     Логин = s.u.login,
                     Имя = s.u.name,
                     Фамилия = s.u.surname,
                     Статус = s.l.name,
-                    datetime_at = s.u.datetime_at
+                    s.u.datetime_at
                 });
         }
 
@@ -162,7 +162,7 @@ namespace PuntryProgram.Classes
                     (DateTime)s.u.datetime_at,
                     s.u.image,
                     s.l.name
-                ).Single();
+                )).Single();
         }
 
         public static int GetUserId(string login)
@@ -226,69 +226,62 @@ namespace PuntryProgram.Classes
             var dateTimeUP = (DateTime)_db.FileChanges.Where(w => w.file_id == fileId).ToList().Last().datetime_up;
 
             return _db.Files
-                .Join(_db.FileChanges, f => f.id, fc => fc.file_id, (f, fc) => new { f, fc })
-                .Where(f => f.f.id == fileId)
+                .Join(_db.StatusFile, f => f.status_file_id, sf => sf.id, (f, sf) => new { f, sf })
+                .Join(_db.FileChanges, ff => ff.f.status_file_id, fc => fc.id, (ff, fc) => new { ff, fc })
+                .Where(w => w.ff.f.id == fileId)
                 .Select(s => new FileStruct
                 (
-                    s.f.id,
-                    s.f.name,
-                    s.f.comment,
-                    s.f.extension,
-                    (int)s.f.size,
-                    s.f.data,
+                    s.ff.f.id,
+                    s.ff.f.name,
+                    s.ff.f.comment,
+                    s.ff.f.extension,
+                    (int)s.ff.f.size,
+                    s.ff.f.data,
                     dateTimeAT,
                     dateTimeUP,
-                    s.f.status_file_id
-                    s.f.archive,
-                    (int)s.f.user_id)
-                ).First();
+                    s.ff.sf.name,
+                    s.ff.f.archive,
+                    (int)s.ff.f.user_id
+                )).Single();
         }
 
-        public static StatusFile CheckStatusFile(int fileId)
+        public static string CheckStatusFile(int fileId)
         {
-            var review = _db.Files.Where(f => f.id == fileId && f.review == true && f.project == false).Any();
-            var global = _db.Files.Where(f => f.id == fileId && f.review == false && f.project == true).Any();
+            var file = _db.Files
+                .Join(_db.StatusFile, f => f.status_file_id, sf => sf.id, (f, sf) => new { f, sf })
+                .Where(w => w.f.id == fileId)
+                .Single();
 
-            return (global == true) ? StatusFile.Project : (review == true) ? StatusFile.Review : StatusFile.Draft;
+            return file.sf.name;
         }
 
         public static int CountFiles(int userId, StatusFile statusFile)
         {
-            return _db.Files
-                .Count(c =>
-                (statusFile == StatusFile.Draft) ? c.user_id == userId && c.project == false :
-                (statusFile == StatusFile.Project) ? c.user_id == userId && c.review == false && c.project == true :
-                c.user_id == userId);
-        }
+            var files = _db.Files
+                .Join(_db.StatusFile, f => f.status_file_id, sf => sf.id, (f, sf) => new { f, sf })
+                .Where(w => w.f.user_id == userId);
 
-        public static int SizeAllFiles(int userId)
-        {
-            var files = _db.Files.Where(w => w.user_id == userId);
-            var result = 0;
-
-            foreach (var file in files)
-                result += (int)file.size;
-
-            return result;
+            return (statusFile == StatusFile.All) ? files.Count() : (statusFile == StatusFile.Project) ? files.Count(x => x.sf.name == "Проект") : files.Count(x => x.sf.name == "Черновик");
         }
 
         public static IQueryable FilesTable(int userId, StatusFile statusFile)
         {
             return _db.Files
                 .Join(_db.Users, f => f.user_id, u => u.id, (f, u) => new { f, u })
+                .Join(_db.StatusFile, ff => ff.f.status_file_id, sf => sf.id, (ff, sf) => new { ff, sf })
+                .Where(w => w.ff.f.user_id == userId)
                 .Where(w =>
-                (statusFile == StatusFile.All) ? w.f.archive == false :
-                (statusFile == StatusFile.Archive) ? w.u.id == userId && w.f.archive == true :
-                (statusFile == StatusFile.Project) ? w.f.project == true && w.f.archive == false :
-                (statusFile == StatusFile.Review) ? w.f.review == true && w.f.archive == false :
-                w.u.id == userId && w.f.archive == false)
+                (statusFile == StatusFile.All) ? w.ff.f.archive == false :
+                (statusFile == StatusFile.Archive) ? w.ff.f.archive == true :
+                (statusFile == StatusFile.Project) ? w.ff.f.archive == false && w.sf.name == "Проект" :
+                w.ff.f.archive == false && w.sf.name == "Черновик")
                 .Select(s => new
                 {
-                    id = s.f.id,
-                    Название = s.f.name,
-                    Описание = s.f.comment,
-                    Владелец = s.u.login,
-                    Статус = (s.f.project == true) ? "Проект" : (s.f.review == true) ? "На проверке" : "Черновик",
+                    s.ff.f.id,
+                    Название = s.ff.f.name,
+                    Описание = s.ff.f.comment,
+                    Владелец = s.ff.u.login,
+                    Статус = s.sf.name
                 });
         }
 
@@ -297,14 +290,15 @@ namespace PuntryProgram.Classes
             return _db.FavoriteFiles
                 .Join(_db.Users, favorite1 => favorite1.user_id, u => u.id, (favorite1, u) => new { favorite1, u })
                 .Join(_db.Files, favorite2 => favorite2.favorite1.file_id, f => f.id, (favorite2, f) => new { favorite2, f })
-                .Where(w => w.favorite2.u.id == userId)
+                .Join(_db.StatusFile, ff => ff.f.status_file_id, sf => sf.id, (ff, sf) => new { ff, sf })
+                .Where(w => w.ff.favorite2.u.id == userId)
                 .Select(s => new
                 {
-                    id = s.f.id,
-                    Название = s.f.name,
-                    Описание = s.f.comment,
-                    Владелец = s.favorite2.u.login,
-                    Статус = (s.f.project == true) ? "Проект" : (s.f.review == true) ? "На проверке" : "Черновик",
+                    s.ff.f.id,
+                    Название = s.ff.f.name,
+                    Описание = s.ff.f.comment,
+                    Владелец = s.ff.favorite2.u.login,
+                    Статус = s.sf.name,
                 });
         }
 
@@ -312,19 +306,20 @@ namespace PuntryProgram.Classes
         {
             return _db.Files
                 .Join(_db.Users, f => f.user_id, u => u.id, (f, u) => new { f, u })
+                .Join(_db.StatusFile, ff => ff.f.status_file_id, sf => sf.id, (ff, sf) => new { ff, sf })
+                .Where(w => w.ff.f.user_id == userId)
                 .Where(w =>
-                (statusFile == StatusFile.All) ? w.f.archive == false :
-                (statusFile == StatusFile.Archive) ? w.u.id == userId && w.f.archive == true :
-                (statusFile == StatusFile.Project) ? w.f.project == true && w.f.archive == false :
-                (statusFile == StatusFile.Review) ? w.f.review == true && w.f.archive == false :
-                w.u.id == userId && w.f.archive == false)
+                (statusFile == StatusFile.All) ? w.ff.f.archive == false :
+                (statusFile == StatusFile.Archive) ? w.ff.f.archive == true :
+                (statusFile == StatusFile.Project) ? w.ff.f.archive == false && w.sf.name == "Проект" :
+                w.ff.f.archive == false && w.sf.name == "Черновик")
                 .Select(s => new
                 {
-                    id = s.f.id,
-                    Название = s.f.name,
-                    Описание = s.f.comment,
-                    Владелец = s.u.login,
-                    Статус = (s.f.project == true) ? "Проект" : (s.f.review == true) ? "На проверке" : "Черновик",
+                    s.ff.f.id,
+                    Название = s.ff.f.name,
+                    Описание = s.ff.f.comment,
+                    Владелец = s.ff.u.login,
+                    Статус = s.sf.name
                 })
                 .Where(w =>
                 w.Статус.StartsWith(text) ||
@@ -338,14 +333,15 @@ namespace PuntryProgram.Classes
             return _db.FavoriteFiles
                 .Join(_db.Users, favorite1 => favorite1.user_id, u => u.id, (favorite1, u) => new { favorite1, u })
                 .Join(_db.Files, favorite2 => favorite2.favorite1.file_id, f => f.id, (favorite2, f) => new { favorite2, f })
-                .Where(w => w.favorite2.u.id == userId)
+                .Join(_db.StatusFile, ff => ff.f.status_file_id, sf => sf.id, (ff, sf) => new { ff, sf })
+                .Where(w => w.ff.favorite2.u.id == userId)
                 .Select(s => new
                 {
-                    id = s.f.id,
-                    Название = s.f.name,
-                    Описание = s.f.comment,
-                    Владелец = s.favorite2.u.login,
-                    Статус = (s.f.project == true) ? "Проект" : (s.f.review == true) ? "На проверке" : "Черновик",
+                    s.ff.f.id,
+                    Название = s.ff.f.name,
+                    Описание = s.ff.f.comment,
+                    Владелец = s.ff.favorite2.u.login,
+                    Статус = s.sf.name
                 })
                 .Where(w =>
                 w.Статус.StartsWith(text) ||
@@ -362,7 +358,7 @@ namespace PuntryProgram.Classes
 
             _db.SubmitChanges();
 
-            if (status==true)
+            if (status == true)
                 UpdateStatusFile(userId, fileId, StatusFile.Draft);
         }
 
@@ -381,8 +377,7 @@ namespace PuntryProgram.Classes
         public static void UpdateFile(int userId, int fileId, string name, string comment)
         {
             var file = _db.Files.Where(f => f.id == fileId).Single();
-
-            string changesComment = (file.comment != null && file.comment != comment && file.name != name) ? "Изменено имя и описание файла." : (file.name != name) ? "Изменено имя файла." : (file.comment != comment) ? "Изменено описание файла." : "";
+            var changesComment = (file.comment != null && file.comment != comment && file.name != name) ? "Изменено имя и описание файла." : (file.name != name) ? "Изменено имя файла." : (file.comment != comment) ? "Изменено описание файла." : "";
 
             file.name = name;
             file.comment = comment;
@@ -393,18 +388,17 @@ namespace PuntryProgram.Classes
                 InsertFileChanges(userId, fileId, changesComment);
         }
 
-        public static void InsertFile(string name, string extension, int size, Binary binary, bool reveiw, bool project, bool archive, int userId)
+        public static void InsertFile(string name, string extension, int size, Binary binary, bool archive, int userId, int statusFileId)
         {
             var newFile = new Files
             {
                 name = name,
                 extension = extension,
                 size = size,
-                binary = binary,
-                review = reveiw,
-                project = project,
+                data = binary,
                 archive = archive,
-                user_id = userId
+                user_id = userId,
+                status_file_id = statusFileId
             };
 
             _db.Files.InsertOnSubmit(newFile);
@@ -499,11 +493,11 @@ namespace PuntryProgram.Classes
         public static void ReplaceFile(string name, string expansion, int size, Binary binary, int userId)
         {
             var file = _db.Files.Where(w => w.name == name && w.extension == expansion && w.user_id == userId).Single();
+            var status = _db.StatusFile.Where(w => w.name == "Черновик").Single();
 
-            file.binary = binary;
+            file.data = binary;
             file.size = size;
-            file.project = false;
-            file.review = false;
+            file.status_file_id = status.id;
 
             _db.SubmitChanges();
 
@@ -512,14 +506,21 @@ namespace PuntryProgram.Classes
 
         public static void UpdateStatusFile(int userId, int fileId, StatusFile statusFile)
         {
-            var file = _db.Files.Where(w => w.id == fileId).Single();
+            var status = _db.StatusFile
+                .Where(w =>
+                (statusFile == StatusFile.Project) ? w.name == "Проект" :
+                (statusFile == StatusFile.Review) ? w.name == "На проверке" : w.name == "Черновик"
+                ).Single();
 
-            file.review = (statusFile == StatusFile.Review) ? true : false;
-            file.project = (statusFile == StatusFile.Project) ? true : false;
+            var file = _db.Files
+                .Join(_db.StatusFile, f => f.status_file_id, sf => sf.id, (f, sf) => new { f, sf })
+                .Where(w => w.f.id == fileId).Single();
+
+            file.f.status_file_id = status.id;
 
             _db.SubmitChanges();
 
-            InsertFileChanges(userId, file.id, (statusFile == StatusFile.Review) ? "Файл отправлен на проверку." : (statusFile == StatusFile.Project) ? "Изменен статус файла на \"Проект\"." : "Изменен статус файла на \"Черновик\".");
+            InsertFileChanges(userId, file.f.id, (statusFile == StatusFile.Review) ? "Файл отправлен на проверку." : (statusFile == StatusFile.Project) ? "Изменен статус файла на \"Проект\"." : "Изменен статус файла на \"Черновик\".");
         }
 
         //============================================================================================================================
