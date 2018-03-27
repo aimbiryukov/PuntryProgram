@@ -66,7 +66,7 @@ namespace PuntryProgram.Classes
                         DataMethod.ReplaceFile(name, expansion, (int)size.Length, binary, userId);
                 }
                 else
-                    DataMethod.InsertFile(name, expansion, (int)size.Length, binary, false, false, false, userId);
+                    DataMethod.InsertFile(name, expansion, (int)size.Length, binary, false, userId);
             }
             catch (Exception ex)
             {

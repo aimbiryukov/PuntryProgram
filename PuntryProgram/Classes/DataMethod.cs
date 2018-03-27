@@ -8,14 +8,14 @@ using System.Text.RegularExpressions;
 
 namespace PuntryProgram.Classes
 {
-    public enum LevelAccess
+    public enum LevelAccessEnum
     {
         Admin,
         Editor,
         User
     }
 
-    public enum StatusFile
+    public enum StatusFileEnum
     {
         My,
         All,
@@ -147,6 +147,11 @@ namespace PuntryProgram.Classes
                 w.Статус.StartsWith(text));
         }
 
+        public static IQueryable AccessLevelsTable()
+        {
+            return _db.AccessLevels;
+        }
+
         public static UserStruct GetUser(int userId)
         {
             return _db.Users
@@ -255,30 +260,41 @@ namespace PuntryProgram.Classes
             return file.sf.name;
         }
 
-        public static int CountFiles(int userId, StatusFile statusFile)
+        public static int CountFiles(int userId, StatusFileEnum statusFile)
         {
             var files = _db.Files
                 .Join(_db.StatusFile, f => f.status_file_id, sf => sf.id, (f, sf) => new { f, sf })
                 .Where(w => w.f.user_id == userId);
 
-            return (statusFile == StatusFile.All) ? files.Count() : (statusFile == StatusFile.Project) ? files.Count(x => x.sf.name == "Проект") : files.Count(x => x.sf.name == "Черновик");
+            return (statusFile == StatusFileEnum.My) ? files.Count() : (statusFile == StatusFileEnum.Project) ? files.Count(x => x.sf.name == "Проект") : files.Count(x => x.sf.name == "Черновик");
         }
 
-        public static IQueryable FilesTable(int userId, StatusFile statusFile)
+        public static int SizeAllFiles(int userId)
+        {
+            var files = _db.Files.Where(w => w.user_id == userId);
+            var result = 0;
+
+            foreach (var file in files)
+                result += (int)file.size;
+
+            return result;
+        }
+
+        public static IQueryable FilesTable(int userId, StatusFileEnum statusFile)
         {
             return _db.Files
                 .Join(_db.Users, f => f.user_id, u => u.id, (f, u) => new { f, u })
                 .Join(_db.StatusFile, ff => ff.f.status_file_id, sf => sf.id, (ff, sf) => new { ff, sf })
-                .Where(w => w.ff.f.user_id == userId)
                 .Where(w =>
-                (statusFile == StatusFile.All) ? w.ff.f.archive == false :
-                (statusFile == StatusFile.Archive) ? w.ff.f.archive == true :
-                (statusFile == StatusFile.Project) ? w.ff.f.archive == false && w.sf.name == "Проект" :
-                w.ff.f.archive == false && w.sf.name == "Черновик")
+                (statusFile == StatusFileEnum.All) ? w.ff.f.archive == false :
+                (statusFile == StatusFileEnum.Archive) ? w.ff.f.user_id == userId && w.ff.f.archive == true :
+                (statusFile == StatusFileEnum.Project) ? w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Проект" :
+                w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Черновик")
                 .Select(s => new
                 {
                     s.ff.f.id,
                     Название = s.ff.f.name,
+                    Расширение = s.ff.f.extension,
                     Описание = s.ff.f.comment,
                     Владелец = s.ff.u.login,
                     Статус = s.sf.name
@@ -296,27 +312,28 @@ namespace PuntryProgram.Classes
                 {
                     s.ff.f.id,
                     Название = s.ff.f.name,
+                    Расширение = s.ff.f.extension,
                     Описание = s.ff.f.comment,
                     Владелец = s.ff.favorite2.u.login,
                     Статус = s.sf.name,
                 });
         }
 
-        public static IQueryable SearchFiles(int userId, string text, StatusFile statusFile)
+        public static IQueryable SearchFiles(int userId, string text, StatusFileEnum statusFile)
         {
             return _db.Files
                 .Join(_db.Users, f => f.user_id, u => u.id, (f, u) => new { f, u })
                 .Join(_db.StatusFile, ff => ff.f.status_file_id, sf => sf.id, (ff, sf) => new { ff, sf })
-                .Where(w => w.ff.f.user_id == userId)
                 .Where(w =>
-                (statusFile == StatusFile.All) ? w.ff.f.archive == false :
-                (statusFile == StatusFile.Archive) ? w.ff.f.archive == true :
-                (statusFile == StatusFile.Project) ? w.ff.f.archive == false && w.sf.name == "Проект" :
-                w.ff.f.archive == false && w.sf.name == "Черновик")
+                (statusFile == StatusFileEnum.All) ? w.ff.f.archive == false :
+                (statusFile == StatusFileEnum.Archive) ? w.ff.f.user_id == userId && w.ff.f.archive == true :
+                (statusFile == StatusFileEnum.Project) ? w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Проект" :
+                w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Черновик")
                 .Select(s => new
                 {
                     s.ff.f.id,
                     Название = s.ff.f.name,
+                    Расширение = s.ff.f.extension,
                     Описание = s.ff.f.comment,
                     Владелец = s.ff.u.login,
                     Статус = s.sf.name
@@ -325,7 +342,8 @@ namespace PuntryProgram.Classes
                 w.Статус.StartsWith(text) ||
                 w.Название.StartsWith(text) ||
                 w.Описание.StartsWith(text) ||
-                w.Владелец.StartsWith(text));
+                w.Владелец.StartsWith(text)||
+                w.Расширение.StartsWith(text));
         }
 
         public static IQueryable SearchFavorites(int userId, string text)
@@ -339,6 +357,7 @@ namespace PuntryProgram.Classes
                 {
                     s.ff.f.id,
                     Название = s.ff.f.name,
+                    Расширение = s.ff.f.extension,
                     Описание = s.ff.f.comment,
                     Владелец = s.ff.favorite2.u.login,
                     Статус = s.sf.name
@@ -347,7 +366,8 @@ namespace PuntryProgram.Classes
                 w.Статус.StartsWith(text) ||
                 w.Название.StartsWith(text) ||
                 w.Описание.StartsWith(text) ||
-                w.Владелец.StartsWith(text));
+                w.Владелец.StartsWith(text) ||
+                w.Расширение.StartsWith(text));
         }
 
         public static void FileToArchive(int userId, int fileId, bool status)
@@ -359,7 +379,7 @@ namespace PuntryProgram.Classes
             _db.SubmitChanges();
 
             if (status == true)
-                UpdateStatusFile(userId, fileId, StatusFile.Draft);
+                UpdateStatusFile(userId, fileId, StatusFileEnum.Draft);
         }
 
         public static void DeleteFile(int fileId)
@@ -388,8 +408,10 @@ namespace PuntryProgram.Classes
                 InsertFileChanges(userId, fileId, changesComment);
         }
 
-        public static void InsertFile(string name, string extension, int size, Binary binary, bool archive, int userId, int statusFileId)
+        public static void InsertFile(string name, string extension, int size, Binary binary, bool archive, int userId)
         {
+            var status = _db.StatusFile.Where(w => w.name == "Черновик").Single();
+
             var newFile = new Files
             {
                 name = name,
@@ -398,7 +420,7 @@ namespace PuntryProgram.Classes
                 data = binary,
                 archive = archive,
                 user_id = userId,
-                status_file_id = statusFileId
+                status_file_id = status.id
             };
 
             _db.Files.InsertOnSubmit(newFile);
@@ -504,12 +526,12 @@ namespace PuntryProgram.Classes
             InsertFileChanges(userId, file.id, "Файл был обновлен.");
         }
 
-        public static void UpdateStatusFile(int userId, int fileId, StatusFile statusFile)
+        public static void UpdateStatusFile(int userId, int fileId, StatusFileEnum statusFile)
         {
             var status = _db.StatusFile
                 .Where(w =>
-                (statusFile == StatusFile.Project) ? w.name == "Проект" :
-                (statusFile == StatusFile.Review) ? w.name == "На проверке" : w.name == "Черновик"
+                (statusFile == StatusFileEnum.Project) ? w.name == "Проект" :
+                (statusFile == StatusFileEnum.Review) ? w.name == "На проверке" : w.name == "Черновик"
                 ).Single();
 
             var file = _db.Files
@@ -520,7 +542,7 @@ namespace PuntryProgram.Classes
 
             _db.SubmitChanges();
 
-            InsertFileChanges(userId, file.f.id, (statusFile == StatusFile.Review) ? "Файл отправлен на проверку." : (statusFile == StatusFile.Project) ? "Изменен статус файла на \"Проект\"." : "Изменен статус файла на \"Черновик\".");
+            InsertFileChanges(userId, file.f.id, (statusFile == StatusFileEnum.Review) ? "Файл отправлен на проверку." : (statusFile == StatusFileEnum.Project) ? "Изменен статус файла на \"Проект\"." : "Изменен статус файла на \"Черновик\".");
         }
 
         //============================================================================================================================

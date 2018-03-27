@@ -51,8 +51,10 @@ namespace PuntryProgram.Forms
                             {
                                 _userActive.userId = DataMethod.GetUserId(textBoxLogin.Text);
 
-                                Main main = new Main(_userActive.userId);
-                                main.Owner = this;
+                                Main main = new Main(_userActive.userId)
+                                {
+                                    Owner = this
+                                };
                                 main.Show();
 
                                 Hide();

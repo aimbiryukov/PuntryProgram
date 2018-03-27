@@ -53,9 +53,9 @@ namespace PuntryProgram.Forms
             buttonShow.BackgroundImage = (value == true) ? Properties.Resources.eye : Properties.Resources.eye_hidden;
         }
 
-        private LevelAccess CheckLevel(string level)
+        private LevelAccessEnum CheckLevel(string level)
         {
-            return (level == "Администратор") ? LevelAccess.Admin : (level == "Редактор") ? LevelAccess.Editor : LevelAccess.User;
+            return (level == "Администратор") ? LevelAccessEnum.Admin : (level == "Редактор") ? LevelAccessEnum.Editor : LevelAccessEnum.User;
         }
 
         private void AddUser()
@@ -64,7 +64,7 @@ namespace PuntryProgram.Forms
             {
                 if (MessageBox.Show("Вы действительно желаете добавить данного пользователя?", "Добавить пользователя", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    DataMethod.InsertUser(textBoxName.Text, textBoxSurname.Text, textBoxLogin.Text, DataMethod.GetHash(textBoxPassword.Text), DateTime.Now, _userStruct.binary, CheckLevel(comboBoxLevel.Text));
+                    DataMethod.InsertUser(textBoxName.Text, textBoxSurname.Text, textBoxLogin.Text, DataMethod.GetHash(textBoxPassword.Text), DateTime.Now, _userStruct.binary, (int)comboBoxLevel.SelectedValue);
 
                     ClearForm();
                 }
@@ -81,7 +81,7 @@ namespace PuntryProgram.Forms
             {
                 if (MessageBox.Show("Вы действительно желаете изменить информацию о данном пользователе?", "Измененить пользователя", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    DataMethod.UpdateUser(_userStruct.userId, textBoxName.Text, textBoxSurname.Text, textBoxLogin.Text, DataMethod.GetHash(textBoxPassword.Text), _userStruct.binary, CheckLevel(comboBoxLevel.Text));
+                    DataMethod.UpdateUser(_userStruct.userId, textBoxName.Text, textBoxSurname.Text, textBoxLogin.Text, DataMethod.GetHash(textBoxPassword.Text), _userStruct.binary, (int)comboBoxLevel.SelectedValue);
                 }
             }
             catch (Exception ex)
@@ -104,7 +104,7 @@ namespace PuntryProgram.Forms
             if (_statusUpdate == true)
             {
                 Text = "Изменение пользователя: " + _userStruct.login;
-                comboBoxLevel.Text = (_userStruct.level == LevelAccess.Admin) ? "Администратор" : (_userStruct.level == LevelAccess.Editor) ? "Редактор" : "Пользователь";
+                comboBoxLevel.Text = _userStruct.levelName;
                 textBoxName.Text = _userStruct.name;
                 textBoxSurname.Text = _userStruct.surname;
                 textBoxLogin.Text = _userStruct.login;
@@ -114,8 +114,8 @@ namespace PuntryProgram.Forms
 
         private void FillComboBox()
         {
-            comboBoxLevel.DataSource = DataMethod.StatusFileTable();
-            comboBoxLevel.SelectedValue = "id";
+            comboBoxLevel.DataSource = DataMethod.AccessLevelsTable();
+            comboBoxLevel.ValueMember = "id";
             comboBoxLevel.DisplayMember = "name";
         }
 

@@ -15,7 +15,7 @@ namespace PuntryProgram.Forms
     {
         private UserStruct _userActive;
         private FileStruct _fileStruct;
-        private StatusFile _statusFile;
+        private StatusFileEnum _statusFile;
 
         public Main(int userId)
         {
@@ -28,7 +28,7 @@ namespace PuntryProgram.Forms
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            _statusFile = StatusFile.My;
+            _statusFile = StatusFileEnum.My;
             _fileStruct = new FileStruct();
 
             InitializeComponent();
@@ -55,35 +55,35 @@ namespace PuntryProgram.Forms
             {
                 if (textBoxSearch.Text.Trim() == "")
                 {
-                    if (_statusFile == StatusFile.Favorite)
+                    if (_statusFile == StatusFileEnum.Favorite)
                         dataGridViewFiles.DataSource = DataMethod.FavoritesTable(_userActive.userId);
-                    else if (_statusFile == StatusFile.All)
-                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFile.All);
-                    else if (_statusFile == StatusFile.Archive)
-                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFile.Archive);
-                    else if (_statusFile == StatusFile.Project)
-                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFile.Project);
-                    else if (_statusFile == StatusFile.Review)
-                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFile.Review);
+                    else if (_statusFile == StatusFileEnum.All)
+                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFileEnum.All);
+                    else if (_statusFile == StatusFileEnum.Archive)
+                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFileEnum.Archive);
+                    else if (_statusFile == StatusFileEnum.Project)
+                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFileEnum.Project);
+                    else if (_statusFile == StatusFileEnum.Review)
+                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFileEnum.Review);
                     else
-                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFile.My);
+                        dataGridViewFiles.DataSource = DataMethod.FilesTable(_userActive.userId, StatusFileEnum.My);
                 }
                 else
                 {
-                    if (_statusFile == StatusFile.Favorite)
+                    if (_statusFile == StatusFileEnum.Favorite)
                         dataGridViewFiles.DataSource = DataMethod.SearchFavorites(_userActive.userId, textBoxSearch.Text);
-                    else if (_statusFile == StatusFile.All)
-                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFile.All);
-                    else if (_statusFile == StatusFile.Archive)
-                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFile.Archive);
-                    else if (_statusFile == StatusFile.Review)
-                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFile.Review);
-                    else if (_statusFile == StatusFile.Project)
-                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFile.Project);
-                    else if (_statusFile == StatusFile.Draft)
-                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFile.Draft);
+                    else if (_statusFile == StatusFileEnum.All)
+                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFileEnum.All);
+                    else if (_statusFile == StatusFileEnum.Archive)
+                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFileEnum.Archive);
+                    else if (_statusFile == StatusFileEnum.Review)
+                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFileEnum.Review);
+                    else if (_statusFile == StatusFileEnum.Project)
+                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFileEnum.Project);
+                    else if (_statusFile == StatusFileEnum.Draft)
+                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFileEnum.Draft);
                     else
-                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFile.My);
+                        dataGridViewFiles.DataSource = DataMethod.SearchFiles(_userActive.userId, textBoxSearch.Text, StatusFileEnum.My);
                 }
 
                 if (dataGridViewFiles.DataSource != null)
@@ -98,39 +98,36 @@ namespace PuntryProgram.Forms
             }
         }
 
-        private StatusFile _checkStatusFile;
+        private string _checkStatusFile;
         private bool _checkFavorite;
 
         private void FillForm()
         {
             try
             {
-                _checkStatusFile = DataMethod.CheckStatusFile(_fileStruct.fileId);
-                _checkFavorite = DataMethod.CheckFavorite(_userActive.userId, _fileStruct.fileId);
-
                 if (dataGridViewFiles.Rows.Count > 0)
                 {
                     _fileStruct = DataMethod.GetFile(_fileStruct.fileId);
+                    _checkStatusFile = DataMethod.CheckStatusFile(_fileStruct.fileId);
+                    _checkFavorite = DataMethod.CheckFavorite(_userActive.userId, _fileStruct.fileId);
                 }
 
-                var level = (_userActive.level == LevelAccess.Admin) ? "Администратор" : (_userActive.level == LevelAccess.Editor) ? "Редактор" : "Пользователь";
-
-                Text = level + ": " + _userActive.name + " " + _userActive.surname + " (" + _userActive.login.ToLower() + ")";
-                buttonAccounts.Visible = (_userActive.level == LevelAccess.Admin);
-                buttonReview.Visible = (_userActive.level != LevelAccess.User);
-                buttonAll.Visible = (_userActive.level != LevelAccess.User);
-                label2.Visible = (_userActive.level != LevelAccess.User);
-                label3.Visible = (_userActive.level == LevelAccess.Admin);
-                reviewToolStripMenuItem.Text = (_checkStatusFile == StatusFile.Review) ? "Отменить проверку" : "Отправить на проверку";
-                reviewToolStripMenuItem.Visible = (_fileStruct.userId == _userActive.userId && _userActive.level == LevelAccess.User && _checkStatusFile != StatusFile.Project && _statusFile != StatusFile.Archive);
+                Text = _userActive.levelName + ": " + _userActive.name + " " + _userActive.surname + " (" + _userActive.login.ToLower() + ")";
+                buttonAccounts.Visible = (_userActive.levelName == "Администратор");
+                buttonReview.Visible = (_userActive.levelName != "Пользователь");
+                buttonAll.Visible = (_userActive.levelName != "Пользователь");
+                label2.Visible = (_userActive.levelName != "Пользователь");
+                label3.Visible = (_userActive.levelName == "Администратор");
+                reviewToolStripMenuItem.Text = (_checkStatusFile == "На проверке") ? "Отменить проверку" : "Отправить на проверку";
+                reviewToolStripMenuItem.Visible = (_fileStruct.userId == _userActive.userId && _userActive.levelName == "Пользователь" && _checkStatusFile != "Проект" && _statusFile != StatusFileEnum.Archive);
                 favoriteToolStripMenuItem.Text = (_checkFavorite == true) ? "Убрать из избранного" : "Добавить в избранное";
-                favoriteToolStripMenuItem.Visible = (_statusFile != StatusFile.Archive);
-                showToolStripMenuItem.Visible = (_statusFile != StatusFile.Archive);
-                downloadToolStripMenuItem.Visible = (_statusFile != StatusFile.Archive);
-                undeleteStripMenuItem.Visible = (_statusFile == StatusFile.Archive);
-                deleteToolStripMenuItem.Visible = (_fileStruct.userId == _userActive.userId || _userActive.level == LevelAccess.Admin);
-                toolStripSeparator2.Visible = (_statusFile != StatusFile.Archive);
-                toolStripSeparator3.Visible = (_statusFile != StatusFile.Archive && (_fileStruct.userId == _userActive.userId || _userActive.level == LevelAccess.Admin));
+                favoriteToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
+                showToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
+                downloadToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
+                undeleteStripMenuItem.Visible = (_statusFile == StatusFileEnum.Archive);
+                deleteToolStripMenuItem.Visible = (_fileStruct.userId == _userActive.userId || _userActive.levelName == "Администратор");
+                toolStripSeparator2.Visible = (_statusFile != StatusFileEnum.Archive);
+                toolStripSeparator3.Visible = (_statusFile != StatusFileEnum.Archive && (_fileStruct.userId == _userActive.userId || _userActive.levelName == "Администратор"));
             }
             catch (Exception ex)
             {
@@ -142,7 +139,7 @@ namespace PuntryProgram.Forms
         {
             try
             {
-                if (_statusFile == StatusFile.Archive)
+                if (_statusFile == StatusFileEnum.Archive)
                 {
                     if (MessageBox.Show("Вы действительно желаете безвозвратно удалить данный файл?", "Удалить файл", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
@@ -184,7 +181,7 @@ namespace PuntryProgram.Forms
 
         private void dataGridViewFiles_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (_statusFile != StatusFile.Archive)
+            if (_statusFile != StatusFileEnum.Archive)
             {
                 (new FileProperties(_fileStruct.fileId, _userActive.userId)).ShowDialog();
 
@@ -209,7 +206,7 @@ namespace PuntryProgram.Forms
             {
                 e.SuppressKeyPress = true;
 
-                if (_statusFile != StatusFile.Archive)
+                if (_statusFile != StatusFileEnum.Archive)
                 {
                     (new FileProperties(_fileStruct.fileId, _userActive.userId)).ShowDialog();
 
@@ -238,7 +235,7 @@ namespace PuntryProgram.Forms
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            _statusFile = StatusFile.My;
+            _statusFile = StatusFileEnum.My;
 
             ButtonActive(buttonMyFiles);
             FillTable();
@@ -292,7 +289,7 @@ namespace PuntryProgram.Forms
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            _statusFile = StatusFile.My;
+            _statusFile = StatusFileEnum.My;
 
             ButtonActive(buttonMyFiles);
             FillTable();
@@ -300,7 +297,7 @@ namespace PuntryProgram.Forms
 
         private void buttonMyFiles_Click(object sender, EventArgs e)
         {
-            _statusFile = StatusFile.My;
+            _statusFile = StatusFileEnum.My;
 
             ButtonActive(buttonMyFiles);
             FillTable();
@@ -308,7 +305,7 @@ namespace PuntryProgram.Forms
 
         private void buttonFavorite_Click(object sender, EventArgs e)
         {
-            _statusFile = StatusFile.Favorite;
+            _statusFile = StatusFileEnum.Favorite;
 
             ButtonActive(buttonFavorite);
             FillTable();
@@ -316,7 +313,7 @@ namespace PuntryProgram.Forms
 
         private void buttonArchive_Click(object sender, EventArgs e)
         {
-            _statusFile = StatusFile.Archive;
+            _statusFile = StatusFileEnum.Archive;
 
             ButtonActive(buttonArchive);
             FillTable();
@@ -324,7 +321,7 @@ namespace PuntryProgram.Forms
 
         private void buttonAll_Click(object sender, EventArgs e)
         {
-            _statusFile = StatusFile.All;
+            _statusFile = StatusFileEnum.All;
 
             ButtonActive(buttonAll);
             FillTable();
@@ -332,7 +329,7 @@ namespace PuntryProgram.Forms
 
         private void buttonProject_Click(object sender, EventArgs e)
         {
-            _statusFile = StatusFile.Project;
+            _statusFile = StatusFileEnum.Project;
 
             ButtonActive(buttonProject);
             FillTable();
@@ -340,7 +337,7 @@ namespace PuntryProgram.Forms
 
         private void buttonReview_Click(object sender, EventArgs e)
         {
-            _statusFile = StatusFile.Review;
+            _statusFile = StatusFileEnum.Review;
 
             ButtonActive(buttonReview);
             FillTable();
@@ -370,16 +367,16 @@ namespace PuntryProgram.Forms
         {
             try
             {
-                if (_checkStatusFile == StatusFile.Review)
+                if (_checkStatusFile == "На проверке")
                 {
-                    DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFile.Draft);
+                    DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFileEnum.Draft);
                     MessageBox.Show("Проверка файла отменена.");
 
                     FillTable();
                 }
                 else
                 {
-                    DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFile.Review);
+                    DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFileEnum.Review);
                     MessageBox.Show("Файл отправлен на проверку.");
 
                     FillTable();

@@ -37,12 +37,12 @@ namespace PuntryProgram.Forms
             {
                 Text = "Свойства пользователя: " + _userStruct.login;
                 textBoxLogin.Text = _userStruct.login;
-                textBoxLevel.Text = (_userStruct.level == LevelAccess.Admin) ? "Администратор" : (_userStruct.level == LevelAccess.Editor) ? "Редактор" : "Пользователь";
+                textBoxLevel.Text = _userStruct.levelName;
                 textBoxName.Text = _userStruct.name;
                 textBoxSurname.Text = _userStruct.surname;
-                textBoxProject.Text = DataMethod.CountFiles(_userStruct.userId, StatusFile.Project).ToString();
-                textBoxDraft.Text = DataMethod.CountFiles(_userStruct.userId, StatusFile.Draft).ToString();
-                textBoxAllFiles.Text = DataMethod.CountFiles(_userStruct.userId, StatusFile.My).ToString();
+                textBoxProject.Text = DataMethod.CountFiles(_userStruct.userId, StatusFileEnum.Project).ToString();
+                textBoxDraft.Text = DataMethod.CountFiles(_userStruct.userId, StatusFileEnum.Draft).ToString();
+                textBoxAllFiles.Text = DataMethod.CountFiles(_userStruct.userId, StatusFileEnum.My).ToString();
                 textBoxSizeFiles.Text = FileMethod.FileSize(DataMethod.SizeAllFiles(_userStruct.userId));
                 textBoxDatetimeAT.Text = _userStruct.dateTimeAT.ToString();
                 pictureBoxUser.SizeMode = PictureBoxSizeMode.StretchImage;

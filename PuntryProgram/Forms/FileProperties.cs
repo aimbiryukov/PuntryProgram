@@ -67,7 +67,7 @@ namespace PuntryProgram.Forms
             }
         }
 
-        private StatusFile _statusFile;
+        private string _statusFile;
         private bool _statusFavorite;
 
         private void FillForm()
@@ -87,16 +87,16 @@ namespace PuntryProgram.Forms
                 textBoxUP.Text = _fileStruct.dateTimeUP.ToString();
                 linkLabelLogin.Text = _userStruct.login;
                 textBoxSize.Text = FileMethod.FileSize(Convert.ToDouble(_fileStruct.size));
-                labelStatusFile.Text = (_statusFile == StatusFile.Project) ? "Проект" : (_statusFile == StatusFile.Review) ? "На проверке" : "Черновик";
-                labelStatusFile.ForeColor = (_statusFile == StatusFile.Project) ? Color.DarkGreen : (_statusFile == StatusFile.Review) ? Color.DarkOrange : Color.DarkRed;
-                buttonUpdate.Enabled = (_userStruct.userId == _userActive.userId || _userActive.level != LevelAccess.User);
+                labelStatusFile.Text = _statusFile;
+                labelStatusFile.ForeColor = (_statusFile == "Проект") ? Color.DarkGreen : (_statusFile == "На проверке") ? Color.DarkOrange : Color.DarkRed;
+                buttonUpdate.Enabled = (_userStruct.userId == _userActive.userId || _userActive.levelName != "Пользователь");
                 buttonFavorite.Text = (_statusFavorite == true) ? "Убрать из избранного" : "Добавить в избранное";
-                buttonStatus.Text = (_statusFile == StatusFile.Review) ? "Отменить проверку" : "Отправить на проверку";
-                buttonStatus.Visible = (_userStruct.userId == _userActive.userId && _userActive.level == LevelAccess.User && _statusFile != StatusFile.Project);
-                buttonYes.Visible = (_userActive.level != LevelAccess.User);
-                buttonYes.Enabled = (_statusFile != StatusFile.Project);
-                buttonNo.Visible = (_userActive.level != LevelAccess.User);
-                buttonNo.Enabled = (_statusFile != StatusFile.Draft);
+                buttonStatus.Text = (_statusFile == "На проверке") ? "Отменить проверку" : "Отправить на проверку";
+                buttonStatus.Visible = (_userStruct.userId == _userActive.userId && _userActive.levelName == "Пользователь" && _statusFile != "Проект");
+                buttonYes.Visible = (_userActive.levelName != "Пользователь");
+                buttonYes.Enabled = (_statusFile != "Проект");
+                buttonNo.Visible = (_userActive.levelName != "Пользователь");
+                buttonNo.Enabled = (_statusFile != "Черновик");
             }
             catch (Exception ex)
             {
@@ -198,7 +198,7 @@ namespace PuntryProgram.Forms
 
             try
             {
-                DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFile.Project);
+                DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFileEnum.Project);
                 MessageBox.Show("Файл утвержден.");
             }
             catch (Exception ex)
@@ -216,7 +216,7 @@ namespace PuntryProgram.Forms
 
             try
             {
-                DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFile.Draft);
+                DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFileEnum.Draft);
                 MessageBox.Show("Файл отклонен.");
             }
             catch (Exception ex)
@@ -234,14 +234,14 @@ namespace PuntryProgram.Forms
 
             try
             {
-                if (_statusFile == StatusFile.Review)
+                if (_statusFile == "На проверке")
                 {
-                    DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFile.Draft);
+                    DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFileEnum.Draft);
                     MessageBox.Show("Проверка файла отменена.");
                 }
                 else
                 {
-                    DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFile.Review);
+                    DataMethod.UpdateStatusFile(_userActive.userId, _fileStruct.fileId, StatusFileEnum.Review);
                     MessageBox.Show("Файл отправлен на проверку.");
                 }
             }
