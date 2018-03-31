@@ -152,6 +152,13 @@ namespace PuntryProgram.Classes
             return _db.AccessLevels;
         }
 
+        public static bool CheckRoot(int userId)
+        {
+            var file = _db.Users.Where(w => w.id == userId).Single();
+
+            return file.root;
+        }
+
         public static UserStruct GetUser(int userId)
         {
             return _db.Users
@@ -230,9 +237,9 @@ namespace PuntryProgram.Classes
             var dateTimeAT = (DateTime)_db.FileChanges.Where(w => w.file_id == fileId).ToList().First().datetime_up;
             var dateTimeUP = (DateTime)_db.FileChanges.Where(w => w.file_id == fileId).ToList().Last().datetime_up;
 
-            return _db.Files
-                .Join(_db.StatusFile, f => f.status_file_id, sf => sf.id, (f, sf) => new { f, sf })
-                .Join(_db.FileChanges, ff => ff.f.status_file_id, fc => fc.id, (ff, fc) => new { ff, fc })
+            return _db.FileChanges
+                .Join(_db.Files, fc => fc.file_id, f => f.id, (fc, f) => new { fc, f })
+                .Join(_db.StatusFile, ff => ff.f.status_file_id, sf => sf.id, (ff, sf) => new { ff, sf })
                 .Where(w => w.ff.f.id == fileId)
                 .Select(s => new FileStruct
                 (
@@ -244,10 +251,10 @@ namespace PuntryProgram.Classes
                     s.ff.f.data,
                     dateTimeAT,
                     dateTimeUP,
-                    s.ff.sf.name,
+                    s.sf.name,
                     s.ff.f.archive,
                     (int)s.ff.f.user_id
-                )).Single();
+                )).First();
         }
 
         public static string CheckStatusFile(int fileId)
@@ -266,7 +273,9 @@ namespace PuntryProgram.Classes
                 .Join(_db.StatusFile, f => f.status_file_id, sf => sf.id, (f, sf) => new { f, sf })
                 .Where(w => w.f.user_id == userId);
 
-            return (statusFile == StatusFileEnum.My) ? files.Count() : (statusFile == StatusFileEnum.Project) ? files.Count(x => x.sf.name == "Проект") : files.Count(x => x.sf.name == "Черновик");
+            return (statusFile == StatusFileEnum.My) ? files.Count() :
+                (statusFile == StatusFileEnum.Project) ? files.Count(x => x.sf.name == "Проект") :
+                files.Count(x => x.sf.name == "Черновик");
         }
 
         public static int SizeAllFiles(int userId)
@@ -288,8 +297,9 @@ namespace PuntryProgram.Classes
                 .Where(w =>
                 (statusFile == StatusFileEnum.All) ? w.ff.f.archive == false :
                 (statusFile == StatusFileEnum.Archive) ? w.ff.f.user_id == userId && w.ff.f.archive == true :
-                (statusFile == StatusFileEnum.Project) ? w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Проект" :
-                w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Черновик")
+                (statusFile == StatusFileEnum.Project) ? w.ff.f.archive == false && w.sf.name == "Проект" :
+                (statusFile == StatusFileEnum.Review) ? w.ff.f.archive == false && w.sf.name == "На проверке" :
+                w.ff.f.user_id == userId && w.ff.f.archive == false)
                 .Select(s => new
                 {
                     s.ff.f.id,
@@ -328,7 +338,8 @@ namespace PuntryProgram.Classes
                 (statusFile == StatusFileEnum.All) ? w.ff.f.archive == false :
                 (statusFile == StatusFileEnum.Archive) ? w.ff.f.user_id == userId && w.ff.f.archive == true :
                 (statusFile == StatusFileEnum.Project) ? w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Проект" :
-                w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Черновик")
+                (statusFile == StatusFileEnum.Review) ? w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "На проверке" :
+                w.ff.f.user_id == userId && w.ff.f.archive == false)
                 .Select(s => new
                 {
                     s.ff.f.id,

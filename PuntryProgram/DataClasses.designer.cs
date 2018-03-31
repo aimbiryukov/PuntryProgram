@@ -33,9 +33,6 @@ namespace PuntryProgram
     partial void InsertAccessLevels(AccessLevels instance);
     partial void UpdateAccessLevels(AccessLevels instance);
     partial void DeleteAccessLevels(AccessLevels instance);
-    partial void InsertUsers(Users instance);
-    partial void UpdateUsers(Users instance);
-    partial void DeleteUsers(Users instance);
     partial void InsertFavoriteFiles(FavoriteFiles instance);
     partial void UpdateFavoriteFiles(FavoriteFiles instance);
     partial void DeleteFavoriteFiles(FavoriteFiles instance);
@@ -48,6 +45,9 @@ namespace PuntryProgram
     partial void InsertStatusFile(StatusFile instance);
     partial void UpdateStatusFile(StatusFile instance);
     partial void DeleteStatusFile(StatusFile instance);
+    partial void InsertUsers(Users instance);
+    partial void UpdateUsers(Users instance);
+    partial void DeleteUsers(Users instance);
     #endregion
 		
 		public DataClassesDataContext() : 
@@ -88,14 +88,6 @@ namespace PuntryProgram
 			}
 		}
 		
-		public System.Data.Linq.Table<Users> Users
-		{
-			get
-			{
-				return this.GetTable<Users>();
-			}
-		}
-		
 		public System.Data.Linq.Table<FavoriteFiles> FavoriteFiles
 		{
 			get
@@ -125,6 +117,14 @@ namespace PuntryProgram
 			get
 			{
 				return this.GetTable<StatusFile>();
+			}
+		}
+		
+		public System.Data.Linq.Table<Users> Users
+		{
+			get
+			{
+				return this.GetTable<Users>();
 			}
 		}
 	}
@@ -243,333 +243,6 @@ namespace PuntryProgram
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Users")]
-	public partial class Users : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _id;
-		
-		private string _name;
-		
-		private string _surname;
-		
-		private string _login;
-		
-		private System.Nullable<System.Guid> _password;
-		
-		private System.Data.Linq.Binary _image;
-		
-		private System.Nullable<System.DateTime> _datetime_at;
-		
-		private System.Nullable<int> _level_id;
-		
-		private EntitySet<FavoriteFiles> _FavoriteFiles;
-		
-		private EntitySet<FileChanges> _FileChanges;
-		
-		private EntityRef<AccessLevels> _AccessLevels;
-		
-    #region Определения метода расширяемости
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnidChanging(int value);
-    partial void OnidChanged();
-    partial void OnnameChanging(string value);
-    partial void OnnameChanged();
-    partial void OnsurnameChanging(string value);
-    partial void OnsurnameChanged();
-    partial void OnloginChanging(string value);
-    partial void OnloginChanged();
-    partial void OnpasswordChanging(System.Nullable<System.Guid> value);
-    partial void OnpasswordChanged();
-    partial void OnimageChanging(System.Data.Linq.Binary value);
-    partial void OnimageChanged();
-    partial void Ondatetime_atChanging(System.Nullable<System.DateTime> value);
-    partial void Ondatetime_atChanged();
-    partial void Onlevel_idChanging(System.Nullable<int> value);
-    partial void Onlevel_idChanged();
-    #endregion
-		
-		public Users()
-		{
-			this._FavoriteFiles = new EntitySet<FavoriteFiles>(new Action<FavoriteFiles>(this.attach_FavoriteFiles), new Action<FavoriteFiles>(this.detach_FavoriteFiles));
-			this._FileChanges = new EntitySet<FileChanges>(new Action<FileChanges>(this.attach_FileChanges), new Action<FileChanges>(this.detach_FileChanges));
-			this._AccessLevels = default(EntityRef<AccessLevels>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int id
-		{
-			get
-			{
-				return this._id;
-			}
-			set
-			{
-				if ((this._id != value))
-				{
-					this.OnidChanging(value);
-					this.SendPropertyChanging();
-					this._id = value;
-					this.SendPropertyChanged("id");
-					this.OnidChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_name", DbType="NVarChar(50)")]
-		public string name
-		{
-			get
-			{
-				return this._name;
-			}
-			set
-			{
-				if ((this._name != value))
-				{
-					this.OnnameChanging(value);
-					this.SendPropertyChanging();
-					this._name = value;
-					this.SendPropertyChanged("name");
-					this.OnnameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_surname", DbType="NVarChar(50)")]
-		public string surname
-		{
-			get
-			{
-				return this._surname;
-			}
-			set
-			{
-				if ((this._surname != value))
-				{
-					this.OnsurnameChanging(value);
-					this.SendPropertyChanging();
-					this._surname = value;
-					this.SendPropertyChanged("surname");
-					this.OnsurnameChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_login", DbType="NVarChar(50)")]
-		public string login
-		{
-			get
-			{
-				return this._login;
-			}
-			set
-			{
-				if ((this._login != value))
-				{
-					this.OnloginChanging(value);
-					this.SendPropertyChanging();
-					this._login = value;
-					this.SendPropertyChanged("login");
-					this.OnloginChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="UniqueIdentifier")]
-		public System.Nullable<System.Guid> password
-		{
-			get
-			{
-				return this._password;
-			}
-			set
-			{
-				if ((this._password != value))
-				{
-					this.OnpasswordChanging(value);
-					this.SendPropertyChanging();
-					this._password = value;
-					this.SendPropertyChanged("password");
-					this.OnpasswordChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
-		public System.Data.Linq.Binary image
-		{
-			get
-			{
-				return this._image;
-			}
-			set
-			{
-				if ((this._image != value))
-				{
-					this.OnimageChanging(value);
-					this.SendPropertyChanging();
-					this._image = value;
-					this.SendPropertyChanged("image");
-					this.OnimageChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_datetime_at", DbType="DateTime")]
-		public System.Nullable<System.DateTime> datetime_at
-		{
-			get
-			{
-				return this._datetime_at;
-			}
-			set
-			{
-				if ((this._datetime_at != value))
-				{
-					this.Ondatetime_atChanging(value);
-					this.SendPropertyChanging();
-					this._datetime_at = value;
-					this.SendPropertyChanged("datetime_at");
-					this.Ondatetime_atChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_level_id", DbType="Int")]
-		public System.Nullable<int> level_id
-		{
-			get
-			{
-				return this._level_id;
-			}
-			set
-			{
-				if ((this._level_id != value))
-				{
-					if (this._AccessLevels.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.Onlevel_idChanging(value);
-					this.SendPropertyChanging();
-					this._level_id = value;
-					this.SendPropertyChanged("level_id");
-					this.Onlevel_idChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FavoriteFiles", Storage="_FavoriteFiles", ThisKey="id", OtherKey="user_id")]
-		public EntitySet<FavoriteFiles> FavoriteFiles
-		{
-			get
-			{
-				return this._FavoriteFiles;
-			}
-			set
-			{
-				this._FavoriteFiles.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FileChanges", Storage="_FileChanges", ThisKey="id", OtherKey="user_id")]
-		public EntitySet<FileChanges> FileChanges
-		{
-			get
-			{
-				return this._FileChanges;
-			}
-			set
-			{
-				this._FileChanges.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AccessLevels_Users", Storage="_AccessLevels", ThisKey="level_id", OtherKey="id", IsForeignKey=true)]
-		public AccessLevels AccessLevels
-		{
-			get
-			{
-				return this._AccessLevels.Entity;
-			}
-			set
-			{
-				AccessLevels previousValue = this._AccessLevels.Entity;
-				if (((previousValue != value) 
-							|| (this._AccessLevels.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._AccessLevels.Entity = null;
-						previousValue.Users.Remove(this);
-					}
-					this._AccessLevels.Entity = value;
-					if ((value != null))
-					{
-						value.Users.Add(this);
-						this._level_id = value.id;
-					}
-					else
-					{
-						this._level_id = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("AccessLevels");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		
-		private void attach_FavoriteFiles(FavoriteFiles entity)
-		{
-			this.SendPropertyChanging();
-			entity.Users = this;
-		}
-		
-		private void detach_FavoriteFiles(FavoriteFiles entity)
-		{
-			this.SendPropertyChanging();
-			entity.Users = null;
-		}
-		
-		private void attach_FileChanges(FileChanges entity)
-		{
-			this.SendPropertyChanging();
-			entity.Users = this;
-		}
-		
-		private void detach_FileChanges(FileChanges entity)
-		{
-			this.SendPropertyChanging();
-			entity.Users = null;
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.FavoriteFiles")]
 	public partial class FavoriteFiles : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -582,9 +255,9 @@ namespace PuntryProgram
 		
 		private System.Nullable<int> _user_id;
 		
-		private EntityRef<Users> _Users;
-		
 		private EntityRef<Files> _Files;
+		
+		private EntityRef<Users> _Users;
 		
     #region Определения метода расширяемости
     partial void OnLoaded();
@@ -600,8 +273,8 @@ namespace PuntryProgram
 		
 		public FavoriteFiles()
 		{
-			this._Users = default(EntityRef<Users>);
 			this._Files = default(EntityRef<Files>);
+			this._Users = default(EntityRef<Users>);
 			OnCreated();
 		}
 		
@@ -673,40 +346,6 @@ namespace PuntryProgram
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FavoriteFiles", Storage="_Users", ThisKey="user_id", OtherKey="id", IsForeignKey=true)]
-		public Users Users
-		{
-			get
-			{
-				return this._Users.Entity;
-			}
-			set
-			{
-				Users previousValue = this._Users.Entity;
-				if (((previousValue != value) 
-							|| (this._Users.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Users.Entity = null;
-						previousValue.FavoriteFiles.Remove(this);
-					}
-					this._Users.Entity = value;
-					if ((value != null))
-					{
-						value.FavoriteFiles.Add(this);
-						this._user_id = value.id;
-					}
-					else
-					{
-						this._user_id = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Users");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Files_FavoriteFiles", Storage="_Files", ThisKey="file_id", OtherKey="id", IsForeignKey=true)]
 		public Files Files
 		{
@@ -737,6 +376,40 @@ namespace PuntryProgram
 						this._file_id = default(Nullable<int>);
 					}
 					this.SendPropertyChanged("Files");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FavoriteFiles", Storage="_Users", ThisKey="user_id", OtherKey="id", IsForeignKey=true)]
+		public Users Users
+		{
+			get
+			{
+				return this._Users.Entity;
+			}
+			set
+			{
+				Users previousValue = this._Users.Entity;
+				if (((previousValue != value) 
+							|| (this._Users.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Users.Entity = null;
+						previousValue.FavoriteFiles.Remove(this);
+					}
+					this._Users.Entity = value;
+					if ((value != null))
+					{
+						value.FavoriteFiles.Add(this);
+						this._user_id = value.id;
+					}
+					else
+					{
+						this._user_id = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Users");
 				}
 			}
 		}
@@ -778,9 +451,9 @@ namespace PuntryProgram
 		
 		private System.Nullable<int> _user_id;
 		
-		private EntityRef<Users> _Users;
-		
 		private EntityRef<Files> _Files;
+		
+		private EntityRef<Users> _Users;
 		
     #region Определения метода расширяемости
     partial void OnLoaded();
@@ -800,8 +473,8 @@ namespace PuntryProgram
 		
 		public FileChanges()
 		{
-			this._Users = default(EntityRef<Users>);
 			this._Files = default(EntityRef<Files>);
+			this._Users = default(EntityRef<Users>);
 			OnCreated();
 		}
 		
@@ -913,40 +586,6 @@ namespace PuntryProgram
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FileChanges", Storage="_Users", ThisKey="user_id", OtherKey="id", IsForeignKey=true)]
-		public Users Users
-		{
-			get
-			{
-				return this._Users.Entity;
-			}
-			set
-			{
-				Users previousValue = this._Users.Entity;
-				if (((previousValue != value) 
-							|| (this._Users.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._Users.Entity = null;
-						previousValue.FileChanges.Remove(this);
-					}
-					this._Users.Entity = value;
-					if ((value != null))
-					{
-						value.FileChanges.Add(this);
-						this._user_id = value.id;
-					}
-					else
-					{
-						this._user_id = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("Users");
-				}
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Files_FileChanges", Storage="_Files", ThisKey="file_id", OtherKey="id", IsForeignKey=true)]
 		public Files Files
 		{
@@ -977,6 +616,40 @@ namespace PuntryProgram
 						this._file_id = default(Nullable<int>);
 					}
 					this.SendPropertyChanged("Files");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FileChanges", Storage="_Users", ThisKey="user_id", OtherKey="id", IsForeignKey=true)]
+		public Users Users
+		{
+			get
+			{
+				return this._Users.Entity;
+			}
+			set
+			{
+				Users previousValue = this._Users.Entity;
+				if (((previousValue != value) 
+							|| (this._Users.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Users.Entity = null;
+						previousValue.FileChanges.Remove(this);
+					}
+					this._Users.Entity = value;
+					if ((value != null))
+					{
+						value.FileChanges.Add(this);
+						this._user_id = value.id;
+					}
+					else
+					{
+						this._user_id = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("Users");
 				}
 			}
 		}
@@ -1464,6 +1137,357 @@ namespace PuntryProgram
 		{
 			this.SendPropertyChanging();
 			entity.StatusFile = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Users")]
+	public partial class Users : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _id;
+		
+		private string _name;
+		
+		private string _surname;
+		
+		private string _login;
+		
+		private System.Nullable<System.Guid> _password;
+		
+		private System.Data.Linq.Binary _image;
+		
+		private System.Nullable<System.DateTime> _datetime_at;
+		
+		private System.Nullable<int> _level_id;
+		
+		private bool _root;
+		
+		private EntitySet<FavoriteFiles> _FavoriteFiles;
+		
+		private EntitySet<FileChanges> _FileChanges;
+		
+		private EntityRef<AccessLevels> _AccessLevels;
+		
+    #region Определения метода расширяемости
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnidChanging(int value);
+    partial void OnidChanged();
+    partial void OnnameChanging(string value);
+    partial void OnnameChanged();
+    partial void OnsurnameChanging(string value);
+    partial void OnsurnameChanged();
+    partial void OnloginChanging(string value);
+    partial void OnloginChanged();
+    partial void OnpasswordChanging(System.Nullable<System.Guid> value);
+    partial void OnpasswordChanged();
+    partial void OnimageChanging(System.Data.Linq.Binary value);
+    partial void OnimageChanged();
+    partial void Ondatetime_atChanging(System.Nullable<System.DateTime> value);
+    partial void Ondatetime_atChanged();
+    partial void Onlevel_idChanging(System.Nullable<int> value);
+    partial void Onlevel_idChanged();
+    partial void OnrootChanging(bool value);
+    partial void OnrootChanged();
+    #endregion
+		
+		public Users()
+		{
+			this._FavoriteFiles = new EntitySet<FavoriteFiles>(new Action<FavoriteFiles>(this.attach_FavoriteFiles), new Action<FavoriteFiles>(this.detach_FavoriteFiles));
+			this._FileChanges = new EntitySet<FileChanges>(new Action<FileChanges>(this.attach_FileChanges), new Action<FileChanges>(this.detach_FileChanges));
+			this._AccessLevels = default(EntityRef<AccessLevels>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int id
+		{
+			get
+			{
+				return this._id;
+			}
+			set
+			{
+				if ((this._id != value))
+				{
+					this.OnidChanging(value);
+					this.SendPropertyChanging();
+					this._id = value;
+					this.SendPropertyChanged("id");
+					this.OnidChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_name", DbType="NVarChar(50)")]
+		public string name
+		{
+			get
+			{
+				return this._name;
+			}
+			set
+			{
+				if ((this._name != value))
+				{
+					this.OnnameChanging(value);
+					this.SendPropertyChanging();
+					this._name = value;
+					this.SendPropertyChanged("name");
+					this.OnnameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_surname", DbType="NVarChar(50)")]
+		public string surname
+		{
+			get
+			{
+				return this._surname;
+			}
+			set
+			{
+				if ((this._surname != value))
+				{
+					this.OnsurnameChanging(value);
+					this.SendPropertyChanging();
+					this._surname = value;
+					this.SendPropertyChanged("surname");
+					this.OnsurnameChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_login", DbType="NVarChar(50)")]
+		public string login
+		{
+			get
+			{
+				return this._login;
+			}
+			set
+			{
+				if ((this._login != value))
+				{
+					this.OnloginChanging(value);
+					this.SendPropertyChanging();
+					this._login = value;
+					this.SendPropertyChanged("login");
+					this.OnloginChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_password", DbType="UniqueIdentifier")]
+		public System.Nullable<System.Guid> password
+		{
+			get
+			{
+				return this._password;
+			}
+			set
+			{
+				if ((this._password != value))
+				{
+					this.OnpasswordChanging(value);
+					this.SendPropertyChanging();
+					this._password = value;
+					this.SendPropertyChanged("password");
+					this.OnpasswordChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_image", DbType="VarBinary(MAX)", UpdateCheck=UpdateCheck.Never)]
+		public System.Data.Linq.Binary image
+		{
+			get
+			{
+				return this._image;
+			}
+			set
+			{
+				if ((this._image != value))
+				{
+					this.OnimageChanging(value);
+					this.SendPropertyChanging();
+					this._image = value;
+					this.SendPropertyChanged("image");
+					this.OnimageChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_datetime_at", DbType="DateTime")]
+		public System.Nullable<System.DateTime> datetime_at
+		{
+			get
+			{
+				return this._datetime_at;
+			}
+			set
+			{
+				if ((this._datetime_at != value))
+				{
+					this.Ondatetime_atChanging(value);
+					this.SendPropertyChanging();
+					this._datetime_at = value;
+					this.SendPropertyChanged("datetime_at");
+					this.Ondatetime_atChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_level_id", DbType="Int")]
+		public System.Nullable<int> level_id
+		{
+			get
+			{
+				return this._level_id;
+			}
+			set
+			{
+				if ((this._level_id != value))
+				{
+					if (this._AccessLevels.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.Onlevel_idChanging(value);
+					this.SendPropertyChanging();
+					this._level_id = value;
+					this.SendPropertyChanged("level_id");
+					this.Onlevel_idChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_root", DbType="Bit NOT NULL")]
+		public bool root
+		{
+			get
+			{
+				return this._root;
+			}
+			set
+			{
+				if ((this._root != value))
+				{
+					this.OnrootChanging(value);
+					this.SendPropertyChanging();
+					this._root = value;
+					this.SendPropertyChanged("root");
+					this.OnrootChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FavoriteFiles", Storage="_FavoriteFiles", ThisKey="id", OtherKey="user_id")]
+		public EntitySet<FavoriteFiles> FavoriteFiles
+		{
+			get
+			{
+				return this._FavoriteFiles;
+			}
+			set
+			{
+				this._FavoriteFiles.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="Users_FileChanges", Storage="_FileChanges", ThisKey="id", OtherKey="user_id")]
+		public EntitySet<FileChanges> FileChanges
+		{
+			get
+			{
+				return this._FileChanges;
+			}
+			set
+			{
+				this._FileChanges.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="AccessLevels_Users", Storage="_AccessLevels", ThisKey="level_id", OtherKey="id", IsForeignKey=true)]
+		public AccessLevels AccessLevels
+		{
+			get
+			{
+				return this._AccessLevels.Entity;
+			}
+			set
+			{
+				AccessLevels previousValue = this._AccessLevels.Entity;
+				if (((previousValue != value) 
+							|| (this._AccessLevels.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._AccessLevels.Entity = null;
+						previousValue.Users.Remove(this);
+					}
+					this._AccessLevels.Entity = value;
+					if ((value != null))
+					{
+						value.Users.Add(this);
+						this._level_id = value.id;
+					}
+					else
+					{
+						this._level_id = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("AccessLevels");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_FavoriteFiles(FavoriteFiles entity)
+		{
+			this.SendPropertyChanging();
+			entity.Users = this;
+		}
+		
+		private void detach_FavoriteFiles(FavoriteFiles entity)
+		{
+			this.SendPropertyChanging();
+			entity.Users = null;
+		}
+		
+		private void attach_FileChanges(FileChanges entity)
+		{
+			this.SendPropertyChanging();
+			entity.Users = this;
+		}
+		
+		private void detach_FileChanges(FileChanges entity)
+		{
+			this.SendPropertyChanging();
+			entity.Users = null;
 		}
 	}
 }

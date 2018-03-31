@@ -105,29 +105,30 @@ namespace PuntryProgram.Forms
         {
             try
             {
-                if (dataGridViewFiles.Rows.Count > 0)
-                {
-                    _fileStruct = DataMethod.GetFile(_fileStruct.fileId);
-                    _checkStatusFile = DataMethod.CheckStatusFile(_fileStruct.fileId);
-                    _checkFavorite = DataMethod.CheckFavorite(_userActive.userId, _fileStruct.fileId);
-                }
-
                 Text = _userActive.levelName + ": " + _userActive.name + " " + _userActive.surname + " (" + _userActive.login.ToLower() + ")";
                 buttonAccounts.Visible = (_userActive.levelName == "Администратор");
                 buttonReview.Visible = (_userActive.levelName != "Пользователь");
                 buttonAll.Visible = (_userActive.levelName != "Пользователь");
                 label2.Visible = (_userActive.levelName != "Пользователь");
                 label3.Visible = (_userActive.levelName == "Администратор");
-                reviewToolStripMenuItem.Text = (_checkStatusFile == "На проверке") ? "Отменить проверку" : "Отправить на проверку";
-                reviewToolStripMenuItem.Visible = (_fileStruct.userId == _userActive.userId && _userActive.levelName == "Пользователь" && _checkStatusFile != "Проект" && _statusFile != StatusFileEnum.Archive);
-                favoriteToolStripMenuItem.Text = (_checkFavorite == true) ? "Убрать из избранного" : "Добавить в избранное";
-                favoriteToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
-                showToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
-                downloadToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
-                undeleteStripMenuItem.Visible = (_statusFile == StatusFileEnum.Archive);
-                deleteToolStripMenuItem.Visible = (_fileStruct.userId == _userActive.userId || _userActive.levelName == "Администратор");
-                toolStripSeparator2.Visible = (_statusFile != StatusFileEnum.Archive);
-                toolStripSeparator3.Visible = (_statusFile != StatusFileEnum.Archive && (_fileStruct.userId == _userActive.userId || _userActive.levelName == "Администратор"));
+
+                if (dataGridViewFiles.Rows.Count > 0)
+                {
+                    _fileStruct = DataMethod.GetFile(_fileStruct.fileId);
+                    _checkStatusFile = DataMethod.CheckStatusFile(_fileStruct.fileId);
+                    _checkFavorite = DataMethod.CheckFavorite(_userActive.userId, _fileStruct.fileId);
+
+                    reviewToolStripMenuItem.Text = (_checkStatusFile == "На проверке") ? "Отменить проверку" : "Отправить на проверку";
+                    reviewToolStripMenuItem.Visible = (_fileStruct.userId == _userActive.userId && _userActive.levelName == "Пользователь" && _checkStatusFile != "Проект" && _statusFile != StatusFileEnum.Archive);
+                    favoriteToolStripMenuItem.Text = (_checkFavorite == true) ? "Убрать из избранного" : "Добавить в избранное";
+                    favoriteToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
+                    showToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
+                    downloadToolStripMenuItem.Visible = (_statusFile != StatusFileEnum.Archive);
+                    undeleteStripMenuItem.Visible = (_statusFile == StatusFileEnum.Archive);
+                    deleteToolStripMenuItem.Visible = (_fileStruct.userId == _userActive.userId || _userActive.levelName == "Администратор");
+                    toolStripSeparator2.Visible = (_statusFile != StatusFileEnum.Archive);
+                    toolStripSeparator3.Visible = (_statusFile != StatusFileEnum.Archive && (_fileStruct.userId == _userActive.userId || _userActive.levelName == "Администратор"));
+                }
             }
             catch (Exception ex)
             {

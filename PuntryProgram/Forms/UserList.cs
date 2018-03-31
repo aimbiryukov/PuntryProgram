@@ -69,14 +69,19 @@ namespace PuntryProgram.Forms
         {
             try
             {
-                if (_userActive.userId == _userStruct.userId)
-                    MessageBox.Show("Вы не можете удалить собственную учетную запись.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (DataMethod.CheckRoot(_userStruct.userId))
+                    MessageBox.Show("Нельзя удалить главного администратора.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 else
                 {
-                    if (MessageBox.Show("Вы действительно желаете удалить данного пользователя и все его файлы?", "Удалить пользователя", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    if (_userActive.userId == _userStruct.userId)
+                        MessageBox.Show("Вы не можете удалить собственную учетную запись.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    else
                     {
-                        DataMethod.DeleteUser(_userStruct.userId);
-                        FillTable();
+                        if (MessageBox.Show("Вы действительно желаете удалить данного пользователя и все его файлы?", "Удалить пользователя", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            DataMethod.DeleteUser(_userStruct.userId);
+                            FillTable();
+                        }
                     }
                 }
             }
