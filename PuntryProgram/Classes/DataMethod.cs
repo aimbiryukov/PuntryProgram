@@ -337,8 +337,8 @@ namespace PuntryProgram.Classes
                 .Where(w =>
                 (statusFile == StatusFileEnum.All) ? w.ff.f.archive == false :
                 (statusFile == StatusFileEnum.Archive) ? w.ff.f.user_id == userId && w.ff.f.archive == true :
-                (statusFile == StatusFileEnum.Project) ? w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "Проект" :
-                (statusFile == StatusFileEnum.Review) ? w.ff.f.user_id == userId && w.ff.f.archive == false && w.sf.name == "На проверке" :
+                (statusFile == StatusFileEnum.Project) ? w.ff.f.archive == false && w.sf.name == "Проект" :
+                (statusFile == StatusFileEnum.Review) ? w.ff.f.archive == false && w.sf.name == "На проверке" :
                 w.ff.f.user_id == userId && w.ff.f.archive == false)
                 .Select(s => new
                 {
