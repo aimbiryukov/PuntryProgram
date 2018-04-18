@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using PuntryProgram.Classes;
 
@@ -21,8 +13,7 @@ namespace PuntryProgram.Forms
             InitializeComponent();
 
             EnabledForm(true);
-
-            //DataMethod.SPICALDELETE();
+            
             textBoxLogin.MaxLength = 50;
             textBoxPassword.MaxLength = 50;
             textBoxLogin.Validated += textBoxLogin_Validated;
@@ -161,11 +152,6 @@ namespace PuntryProgram.Forms
             {
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void Login_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }

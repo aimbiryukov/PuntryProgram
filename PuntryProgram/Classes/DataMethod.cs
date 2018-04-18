@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Data.Linq;
 using System.Text.RegularExpressions;
 
@@ -133,12 +131,12 @@ namespace PuntryProgram.Classes
                 .OrderByDescending(o => o.u.datetime_at)
                 .Select(s => new
                 {
-                    id = s.u.id,
+                    s.u.id,
                     Логин = s.u.login,
                     Имя = s.u.name,
                     Фамилия = s.u.surname,
                     Статус = s.l.name,
-                    datetime_at = s.u.datetime_at
+                    s.u.datetime_at
                 })
                 .Where(w =>
                 w.Имя.StartsWith(text) ||
@@ -451,9 +449,9 @@ namespace PuntryProgram.Classes
                 .Where(w => w.cc.f.id == fileId)
                 .Select(s => new
                 {
-                    ЧтоИзменилось = s.cc.c.comment,
-                    КтоИзменил = s.u.login,
-                    ДатаИзменения = s.cc.c.datetime_up,
+                    s.cc.c.comment,
+                    s.u.login,
+                    s.cc.c.datetime_up,
                 });
         }
 
@@ -469,9 +467,9 @@ namespace PuntryProgram.Classes
                 w.cc.c.comment.StartsWith(text)))
                 .Select(s => new
                 {
-                    ЧтоИзменилось = s.cc.c.comment,
-                    КтоИзменил = s.u.login,
-                    ДатаИзменения = s.cc.c.datetime_up,
+                    s.cc.c.comment,
+                    s.u.login,
+                    s.cc.c.datetime_up,
                 });
         }
 
@@ -554,17 +552,6 @@ namespace PuntryProgram.Classes
             _db.SubmitChanges();
 
             InsertFileChanges(userId, file.f.id, (statusFile == StatusFileEnum.Review) ? "Файл отправлен на проверку." : (statusFile == StatusFileEnum.Project) ? "Изменен статус файла на \"Проект\"." : "Изменен статус файла на \"Черновик\".");
-        }
-
-        //============================================================================================================================
-
-        public static void SPICALDELETE()
-        {
-            //_db.FileChanges.DeleteAllOnSubmit(_db.FileChanges);
-            //_db.FavoriteFiles.DeleteAllOnSubmit(_db.FavoriteFiles);
-            //_db.Files.DeleteAllOnSubmit(_db.Files);
-            //_db.Users.DeleteAllOnSubmit(_db.Users);
-            //_db.SubmitChanges();
         }
     }
 }

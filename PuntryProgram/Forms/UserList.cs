@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using PuntryProgram.Classes;
 
@@ -77,7 +71,7 @@ namespace PuntryProgram.Forms
                         MessageBox.Show("Вы не можете удалить собственную учетную запись.", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     else
                     {
-                        if (MessageBox.Show("Вы действительно желаете удалить данного пользователя и все его файлы?", "Удалить пользователя", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        if (MessageBox.Show("Вы действительно желаете удалить данного пользователя и все принадлежащие ему файлы?", "Удалить пользователя", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                         {
                             DataMethod.DeleteUser(_userStruct.userId);
                             FillTable();
