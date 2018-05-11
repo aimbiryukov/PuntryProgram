@@ -176,7 +176,7 @@ namespace PuntryProgram.Forms
 
             try
             {
-                FileMethod.DownloadFile(_userActive.userId, _fileStruct.fileId);
+                FileMethod.DownloadFile(_userActive.userId, _fileStruct.fileId);                
             }
             catch (Exception ex)
             {
@@ -184,6 +184,7 @@ namespace PuntryProgram.Forms
             }
 
             EnabledForm(true);
+            FillForm();
         }
 
         private void buttonYes_Click(object sender, EventArgs e)
