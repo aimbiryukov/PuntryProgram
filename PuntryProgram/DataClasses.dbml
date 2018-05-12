@@ -7,13 +7,30 @@
       <Association Name="AccessLevels_Users" Member="Users" ThisKey="id" OtherKey="level_id" Type="Users" />
     </Type>
   </Table>
+  <Table Name="dbo.Users" Member="Users">
+    <Type Name="Users">
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="name" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="surname" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="login" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="password" Type="System.Guid" DbType="UniqueIdentifier" CanBeNull="true" />
+      <Column Name="image" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="datetime_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="level_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="root" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="Users_FavoriteFiles" Member="FavoriteFiles" ThisKey="id" OtherKey="user_id" Type="FavoriteFiles" />
+      <Association Name="Users_FileChanges" Member="FileChanges" ThisKey="id" OtherKey="user_id" Type="FileChanges" />
+      <Association Name="Users_Files" Member="Files" ThisKey="id" OtherKey="user_id" Type="Files" />
+      <Association Name="AccessLevels_Users" Member="AccessLevels" ThisKey="level_id" OtherKey="id" Type="AccessLevels" IsForeignKey="true" />
+    </Type>
+  </Table>
   <Table Name="dbo.FavoriteFiles" Member="FavoriteFiles">
     <Type Name="FavoriteFiles">
       <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="file_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="user_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="Files_FavoriteFiles" Member="Files" ThisKey="file_id" OtherKey="id" Type="Files" IsForeignKey="true" />
       <Association Name="Users_FavoriteFiles" Member="Users" ThisKey="user_id" OtherKey="id" Type="Users" IsForeignKey="true" />
+      <Association Name="Files_FavoriteFiles" Member="Files" ThisKey="file_id" OtherKey="id" Type="Files" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.FileChanges" Member="FileChanges">
@@ -23,8 +40,8 @@
       <Column Name="datetime_up" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
       <Column Name="file_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="user_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="Files_FileChanges" Member="Files" ThisKey="file_id" OtherKey="id" Type="Files" IsForeignKey="true" />
       <Association Name="Users_FileChanges" Member="Users" ThisKey="user_id" OtherKey="id" Type="Users" IsForeignKey="true" />
+      <Association Name="Files_FileChanges" Member="Files" ThisKey="file_id" OtherKey="id" Type="Files" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.Files" Member="Files">
@@ -40,6 +57,7 @@
       <Column Name="user_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Association Name="Files_FavoriteFiles" Member="FavoriteFiles" ThisKey="id" OtherKey="file_id" Type="FavoriteFiles" />
       <Association Name="Files_FileChanges" Member="FileChanges" ThisKey="id" OtherKey="file_id" Type="FileChanges" />
+      <Association Name="Users_Files" Member="Users" ThisKey="user_id" OtherKey="id" Type="Users" IsForeignKey="true" />
       <Association Name="StatusFile_Files" Member="StatusFile" ThisKey="status_file_id" OtherKey="id" Type="StatusFile" IsForeignKey="true" />
     </Type>
   </Table>
@@ -48,22 +66,6 @@
       <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="name" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Association Name="StatusFile_Files" Member="Files" ThisKey="id" OtherKey="status_file_id" Type="Files" />
-    </Type>
-  </Table>
-  <Table Name="dbo.Users" Member="Users">
-    <Type Name="Users">
-      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="name" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="surname" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="login" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
-      <Column Name="password" Type="System.Guid" DbType="UniqueIdentifier" CanBeNull="true" />
-      <Column Name="image" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX)" CanBeNull="true" UpdateCheck="Never" />
-      <Column Name="datetime_at" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="level_id" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="root" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
-      <Association Name="Users_FavoriteFiles" Member="FavoriteFiles" ThisKey="id" OtherKey="user_id" Type="FavoriteFiles" />
-      <Association Name="Users_FileChanges" Member="FileChanges" ThisKey="id" OtherKey="user_id" Type="FileChanges" />
-      <Association Name="AccessLevels_Users" Member="AccessLevels" ThisKey="level_id" OtherKey="id" Type="AccessLevels" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>
