@@ -26,22 +26,22 @@ namespace PuntryProgram.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-A4B68L9\\SQLEXPRESS;Initial Catalog=PuntryProgram;Integrated S" +
-            "ecurity=True")]
-        public string PuntryProgramConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-A4B68L9\\SQLEXPRESS;Initial Catalog=PuntryDB;Integrated Securi" +
+            "ty=True")]
+        public string PuntryDBConnectionString {
             get {
-                return ((string)(this["PuntryProgramConnectionString"]));
+                return ((string)(this["PuntryDBConnectionString"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=DESKTOP-A4B68L9\\SQLEXPRESS;Initial Catalog=PuntryDB;Integrated Securi" +
-            "ty=True")]
-        public string PuntryDBConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=bittbn.database.windows.net;Initial Catalog=PuntryDB;User ID=bittbn;P" +
+            "assword=gohimprost5W")]
+        public string PuntryDBAzureConnection {
             get {
-                return ((string)(this["PuntryDBConnectionString"]));
+                return ((string)(this["PuntryDBAzureConnection"]));
             }
         }
     }

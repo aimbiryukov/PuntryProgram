@@ -134,7 +134,7 @@ namespace PuntryProgram.Forms
         {
             try
             {
-                if (_statusFile == StatusFileEnum.Archive)
+                if (_statusFile == StatusFileEnum.Archive||( _userActive.levelName == "Администратор"&&_userActive.userId!=_fileStruct.userId))
                 {
                     if (MessageBox.Show("Вы действительно желаете безвозвратно удалить данный файл?", "Удалить файл", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
@@ -142,7 +142,7 @@ namespace PuntryProgram.Forms
 
                         FillTable();
                     }
-                }
+                }                
                 else
                 {
                     DataMethod.FileToArchive(_userActive.userId, _fileStruct.fileId, true);

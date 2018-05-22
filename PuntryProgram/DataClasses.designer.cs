@@ -51,7 +51,7 @@ namespace PuntryProgram
     #endregion
 		
 		public DataClassesDataContext() : 
-				base(global::PuntryProgram.Properties.Settings.Default.PuntryDBConnectionString, mappingSource)
+				base(global::PuntryProgram.Properties.Settings.Default.PuntryDBAzureConnection, mappingSource)
 		{
 			OnCreated();
 		}
