@@ -44,5 +44,16 @@ namespace PuntryProgram.Properties {
                 return ((string)(this["PuntryDBAzureConnection"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=192.168.3.8;Initial Catalog=PuntryDB;User ID=Biryukovv;Password=gohim" +
+            "prost5W")]
+        public string PuntryDBVivtConnection {
+            get {
+                return ((string)(this["PuntryDBVivtConnection"]));
+            }
+        }
     }
 }
